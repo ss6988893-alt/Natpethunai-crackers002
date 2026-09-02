@@ -1,0 +1,2 @@
+import { Router } from 'express'; import rateLimit from 'express-rate-limit'; import { createEnquiry } from '../controllers/contactController.js'; import { validate } from '../middleware/validate.js'; import { contactSchema } from '../utils/schemas.js';
+const router = Router(); router.post('/contact', rateLimit({ windowMs: 15 * 60 * 1000, limit: 8, standardHeaders: 'draft-8', legacyHeaders: false }), validate(contactSchema), createEnquiry); export default router;
