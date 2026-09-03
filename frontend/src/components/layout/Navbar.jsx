@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { FiMenu, FiShoppingBag, FiX } from 'react-icons/fi';
+import { FiMenu, FiPhone, FiShoppingBag, FiX } from 'react-icons/fi';
 import { Link, NavLink } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 
@@ -21,13 +21,14 @@ export default function Navbar() {
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <div className="navbar__inner container-wide">
         <Link to="/" className="brand" aria-label="Natpe Thunai Crackers home">
-          <span className="brand__mark" aria-hidden="true">✦</span>
+          <span className="brand__mark brand__mark--image" aria-hidden="true"><img src="/assets/shop-logo.webp" alt="" /></span>
           <span><strong>Natpe Thunai</strong><small>Crackers</small></span>
         </Link>
         <nav className="nav-links" aria-label="Primary navigation">
           {links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'}>{label}</NavLink>)}
         </nav>
         <div className="nav-actions">
+          <a className="nav-phone" href="tel:+918524090862" aria-label="Call Natpe Thunai Crackers"><FiPhone /><span>85240 90862</span></a>
           <motion.div key={cartPulse} animate={{ scale: [1, 1.16, 1] }} transition={{ duration: .32 }}>
             <Link className="cart-link" to="/cart" aria-label={`Cart with ${getCartCount()} items`}>
               <FiShoppingBag /><span>{getCartCount()}</span>

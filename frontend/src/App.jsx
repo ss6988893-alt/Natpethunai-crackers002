@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import FloatingActions from './components/layout/FloatingActions';
 
 const Home = lazy(() => import('./pages/Home'));
 const Products = lazy(() => import('./pages/Products'));
@@ -39,6 +40,7 @@ export default function App() {
         </Suspense>
       </AnimatePresence>
       <Footer />
+      <FloatingActions />
     </div>
   );
 }

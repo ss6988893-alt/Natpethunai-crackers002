@@ -40,8 +40,8 @@ export default function Home() {
             </motion.div>
           </div>
           <motion.div className="hero__art" initial={{ opacity: 0, scale: .92, rotateY: -8 }} animate={{ opacity: 1, scale: 1, rotateY: 0 }} transition={{ duration: 1, delay: .2 }}>
-            <img src="/assets/hero-fireworks.png" alt="Premium festive cracker assortment arranged on a deep purple background" fetchPriority="high" />
-            <div className="hero__art-label"><span>Curated for families</span><strong>39 demo products</strong></div>
+            <img src="/assets/shop-banner.webp" alt="Natpe Thunai Crackers festive product collection and shop banner" fetchPriority="high" />
+            <div className="hero__art-label"><span>Order enquiries</span><strong>+91 85240 90862</strong></div>
           </motion.div>
         </div>
       </section>
