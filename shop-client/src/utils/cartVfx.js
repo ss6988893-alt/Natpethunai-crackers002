@@ -14,10 +14,10 @@ export function flyProductToCart(imageElement) {
     { transform: 'translate3d(0,0,0) scale(1)', opacity: 1, offset: 0 },
     { transform: `translate3d(${x * .55}px,${y * .25 - 70}px,0) scale(.55) rotate(8deg)`, opacity: .92, offset: .55 },
     { transform: `translate3d(${x}px,${y}px,0) scale(.08) rotate(18deg)`, opacity: .15, offset: 1 },
-  ], { duration: 620, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
+  ], { duration: 360, easing: 'cubic-bezier(.2,.8,.2,1)', fill: 'forwards' });
   animation.onfinish = () => {
     flyer.remove();
     target.classList.add('cart-link--spark');
-    window.setTimeout(() => target.classList.remove('cart-link--spark'), 480);
+    window.setTimeout(() => target.classList.remove('cart-link--spark'), 300);
   };
 }

@@ -1,5 +1,4 @@
 import { memo, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import { FiEye, FiMinus, FiPlus, FiShoppingBag } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
 import { flyProductToCart } from '../../utils/cartVfx';
@@ -25,15 +24,15 @@ function ProductCard({ product, onQuickView }) {
     flyProductToCart(imageRef.current);
     addToCart(product, quantity);
   };
-  return <motion.article className="product-card" data-product-card data-featured={product.featured || undefined} layoutId={`product-${product.id}`}>
+  return <article className="product-card" data-product-card data-featured={product.featured || undefined}>
     <div ref={tiltRef} className="product-card__tilt" onMouseMove={handleMove} onMouseLeave={resetTilt}>
       <button className="product-card__image" onClick={() => onQuickView(product)} aria-label={`Quick view ${product.name}`}>
-        <motion.img ref={imageRef} layoutId={`product-image-${product.id}`} src={product.image} alt={product.name} loading="lazy" />
+        <img ref={imageRef} src={product.image} alt={product.name} loading="lazy" />
         <span>{available ? '+70%' : 'Price pending'}</span><i><FiEye /> Quick view</i>
       </button>
       <div className="product-card__body"><p>{product.category}</p><h3>{product.name}</h3><div className="price">{available ? <><strong>₹{product.price.toLocaleString('en-IN')}</strong><small>PDF ₹{product.basePrice.toLocaleString('en-IN')} + 70%</small></> : <strong className="price-pending">Price on request</strong>}</div><div className="product-card__actions"><div className="quantity"><button disabled={!available} onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"><FiMinus /></button><span>{quantity}</span><button disabled={!available} onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity"><FiPlus /></button></div><button className="add-button" disabled={!available} onClick={add}><FiShoppingBag /> {available ? 'Add' : 'Enquire'}</button></div></div>
     </div>
-  </motion.article>;
+  </article>;
 }
 
 export default memo(ProductCard);

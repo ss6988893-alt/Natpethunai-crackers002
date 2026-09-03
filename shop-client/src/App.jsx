@@ -1,5 +1,4 @@
 import { lazy, Suspense } from 'react';
-import { AnimatePresence } from 'framer-motion';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
@@ -15,7 +14,7 @@ const OrderSuccess = lazy(() => import('./pages/OrderSuccess'));
 const NotFound = lazy(() => import('./pages/NotFound'));
 
 function PageLoader() {
-  return <div className="page-loader" role="status"><span /><p>Preparing the celebration…</p></div>;
+  return <div className="route-loader" role="status">Loading…</div>;
 }
 
 export default function App() {
@@ -24,21 +23,19 @@ export default function App() {
     <div className="site-shell">
       <a className="skip-link" href="#main-content">Skip to content</a>
       <Navbar />
-      <AnimatePresence mode="wait">
-        <Suspense fallback={<PageLoader />}>
-          <Routes location={location} key={location.pathname}>
-            <Route path="/" element={<Home />} />
-            <Route path="/products" element={<Products />} />
-            <Route path="/combos" element={<Combos />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/order-success/:orderId" element={<OrderSuccess />} />
-            <Route path="/success" element={<Navigate to="/" replace />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
-      </AnimatePresence>
+      <Suspense fallback={<PageLoader />}>
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<Home />} />
+          <Route path="/products" element={<Products />} />
+          <Route path="/combos" element={<Combos />} />
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/order-success/:orderId" element={<OrderSuccess />} />
+          <Route path="/success" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
       <Footer />
       <FloatingActions />
     </div>
