@@ -1,2 +1,17 @@
-import { useState } from 'react'; import { AnimatePresence,motion } from 'framer-motion'; import { FiCheck,FiX } from 'react-icons/fi'; import PageIntro from '../components/layout/PageIntro'; import { combos } from '../data/catalog'; import { useCart } from '../context/CartContext';
-export default function Combos(){const[active,setActive]=useState(null);const{addToCart}=useCart();return <main id="main-content"><PageIntro eyebrow="Four signature boxes" title="One box. A complete celebration."/><section className="combo-grid container-wide">{combos.map(combo=><motion.article className="combo-card" key={combo.id} whileHover={{y:-8,rotateX:2}} style={{'--accent':combo.accent}}><img src={combo.image} alt="" loading="lazy"/><div><span>{combo.productCount} included items</span><h2>{combo.name}</h2><p className="combo-price">₹{combo.price.toLocaleString('en-IN')} <del>₹{combo.originalPrice.toLocaleString('en-IN')}</del></p><ul>{combo.items.slice(0,3).map(item=><li key={item}><FiCheck/>{item}</li>)}</ul><div className="combo-actions"><button className="button button--glass" onClick={()=>setActive(combo)}>View details</button><button className="button button--gold" onClick={()=>addToCart(combo,1)}>Add combo</button></div></div></motion.article>)}</section><AnimatePresence>{active&&<motion.div className="modal-backdrop" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}} onMouseDown={()=>setActive(null)}><motion.div role="dialog" aria-modal="true" className="combo-modal" initial={{scale:.9,y:30}} animate={{scale:1,y:0}} onMouseDown={e=>e.stopPropagation()}><button className="modal-close" onClick={()=>setActive(null)}><FiX/></button><p className="eyebrow">₹{active.price.toLocaleString('en-IN')} combo</p><h2>{active.name}</h2><p>{active.description}</p><ul>{active.items.map(item=><li key={item}><FiCheck/>{item}</li>)}</ul><button className="button button--gold" onClick={()=>{addToCart(active,1);setActive(null)}}>Add combo to cart</button></motion.div></motion.div>}</AnimatePresence></main>}
+import { useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { FiCheck, FiX } from 'react-icons/fi';
+import ComboCarousel3D from '../components/combos/ComboCarousel3D';
+import PageIntro from '../components/layout/PageIntro';
+import { combos } from '../data/catalog';
+import { useCart } from '../context/CartContext';
+
+export default function Combos() {
+  const [active, setActive] = useState(null);
+  const { addToCart } = useCart();
+  return <main id="main-content" className="combos-page">
+    <PageIntro eyebrow="Immersive combo collection" title="One box. A complete celebration." copy="Four curated packages rotate through a cinematic 3D stage. Choose the size that fits your festival." />
+    <ComboCarousel3D combos={combos} onDetails={setActive} onAdd={addToCart} />
+    <AnimatePresence>{active && <motion.div className="modal-backdrop" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={() => setActive(null)}><motion.div role="dialog" aria-modal="true" className="combo-modal" initial={{ scale: .9, y: 30 }} animate={{ scale: 1, y: 0 }} onMouseDown={(event) => event.stopPropagation()}><button className="modal-close" onClick={() => setActive(null)} aria-label="Close combo details"><FiX /></button><p className="eyebrow">₹{active.price.toLocaleString('en-IN')} combo</p><h2>{active.name}</h2><p>{active.description}</p><ul>{active.items.map((item) => <li key={item}><FiCheck />{item}</li>)}</ul><button className="button button--gold" onClick={() => { addToCart(active, 1); setActive(null); }}>Add combo to cart</button></motion.div></motion.div>}</AnimatePresence>
+  </main>;
+}
