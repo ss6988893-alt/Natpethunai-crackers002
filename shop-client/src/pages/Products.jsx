@@ -22,15 +22,20 @@ export default function Products() {
 
   return <main id="main-content" className="products-page">
     <PageIntro eyebrow="120 products from your PDF" title="Find your favourites." copy="The bold selling price is the exact amount listed in your supplied PDF. Blank PDF prices are clearly marked for enquiry." />
-    <section className="catalog-controls container-wide">
-      <div className="catalog__toolbar"><label className="search"><FiSearch /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search crackers or categories" aria-label="Search products" /></label><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></div>
-      <div className="filter-row" aria-label="Product categories">
-        <button className={category === 'all' ? 'active' : ''} onClick={() => chooseCategory('all')}>All products</button>
-        {categories.map((item) => <button key={item.slug} className={category === item.slug ? 'active' : ''} onClick={() => chooseCategory(item.slug)}>{item.name}</button>)}
-      </div>
-    </section>
     <div className="product-scene">
-      <section className="catalog category-catalog container-wide">
+      <section className="products-layout container-wide">
+        <aside className="category-sidebar" aria-label="Product categories">
+          <p className="eyebrow">Browse categories</p>
+          <nav className="filter-row">
+            <button className={category === 'all' ? 'active' : ''} onClick={() => chooseCategory('all')}>All products <span>{products.length}</span></button>
+            {categories.map((item) => <button key={item.slug} className={category === item.slug ? 'active' : ''} onClick={() => chooseCategory(item.slug)}>{item.name} <span>{item.products?.length || products.filter((product) => product.categorySlug === item.slug).length}</span></button>)}
+          </nav>
+        </aside>
+        <div className="products-content">
+          <div className="catalog-controls">
+            <div className="catalog__toolbar"><label className="search"><FiSearch /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search crackers or categories" aria-label="Search products" /></label><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></div>
+          </div>
+          <section className="catalog category-catalog">
         <div className="catalog__meta"><div><p className="eyebrow">The complete shelf</p><strong>{visible.length} products</strong></div><span>{groupedProducts.length} {groupedProducts.length === 1 ? 'category' : 'categories'}</span></div>
         {groupedProducts.length ? <div className="category-product-groups">{groupedProducts.map((group, index) => <section className="product-category-group" id={`category-${group.slug}`} key={group.slug}>
           <header className="product-category-heading">
@@ -40,6 +45,8 @@ export default function Products() {
           </header>
           <div className="product-grid">{group.products.map((product) => <ProductCard key={product.id} product={product} onQuickView={setQuickView} />)}</div>
         </section>)}</div> : <div className="empty-state"><h2>No fireworks found</h2><p>Try another product name or collection.</p></div>}
+      </section>
+        </div>
       </section>
     </div>
     <ProductQuickView product={quickView} onClose={() => setQuickView(null)} onAdd={addToCart} />
