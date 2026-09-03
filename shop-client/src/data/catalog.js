@@ -13,6 +13,7 @@ export const categories = priceListGroups.map((group, index) => ({
 
 export const products = priceListGroups.flatMap((group) => group.items.map(([sourceNumber, name, basePrice], productIndex) => {
   const priceAvailable = Number.isFinite(basePrice);
+  const originalPrice = priceAvailable ? Math.round(basePrice * 1.7) : 0;
   return {
     id: `pdf-${sourceNumber.toLowerCase()}`,
     sourceNumber,
@@ -20,12 +21,12 @@ export const products = priceListGroups.flatMap((group) => group.items.map(([sou
     name,
     category: group.category,
     categorySlug: group.slug,
-    description: priceAvailable ? `Official price-list item. Website price includes 70% above the supplied PDF base price of Rs. ${basePrice}.` : 'Listed in the supplied price list, but its source price was left blank. Please contact the shop for the current price.',
+    description: priceAvailable ? `Official PDF price-list item. Your selling price is Rs. ${basePrice}.` : 'Listed in the supplied price list, but its source price was left blank. Please contact the shop for the current price.',
     image: '/assets/hero-fireworks.png',
     basePrice,
-    price: priceAvailable ? Math.round(basePrice * 1.7) : 0,
-    originalPrice: basePrice,
-    discount: 0,
+    price: priceAvailable ? basePrice : 0,
+    originalPrice,
+    discount: priceAvailable ? Math.round((1 - basePrice / originalPrice) * 100) : 0,
     priceAvailable,
     status: priceAvailable ? 'in-stock' : 'out-of-stock',
     featured: priceAvailable && productIndex === 0,

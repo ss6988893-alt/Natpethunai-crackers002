@@ -28,9 +28,9 @@ function ProductCard({ product, onQuickView }) {
     <div ref={tiltRef} className="product-card__tilt" onMouseMove={handleMove} onMouseLeave={resetTilt}>
       <button className="product-card__image" onClick={() => onQuickView(product)} aria-label={`Quick view ${product.name}`}>
         <img ref={imageRef} src={product.image} alt={product.name} loading="lazy" />
-        <span>{available ? '+70%' : 'Price pending'}</span><i><FiEye /> Quick view</i>
+        <span>{available ? `${product.discount}% off` : 'Price pending'}</span><i><FiEye /> Quick view</i>
       </button>
-      <div className="product-card__body"><p>{product.category}</p><h3>{product.name}</h3><div className="price price--deal">{available ? <><span className="price__change">+70%</span><del>₹{product.basePrice.toLocaleString('en-IN')}</del><strong>₹{product.price.toLocaleString('en-IN')}</strong></> : <strong className="price-pending">Price on request</strong>}</div><div className="product-card__actions"><div className="quantity"><button disabled={!available} onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"><FiMinus /></button><span>{quantity}</span><button disabled={!available} onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity"><FiPlus /></button></div><button className="add-button" disabled={!available} onClick={add}><FiShoppingBag /> {available ? 'Add' : 'Enquire'}</button></div></div>
+      <div className="product-card__body"><p>{product.category}</p><h3>{product.name}</h3><div className="price price--deal">{available ? <><span className="price__change">↓{product.discount}%</span><del>₹{product.originalPrice.toLocaleString('en-IN')}</del><strong>₹{product.price.toLocaleString('en-IN')}</strong></> : <strong className="price-pending">Price on request</strong>}</div><div className="product-card__actions"><div className="quantity"><button disabled={!available} onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"><FiMinus /></button><span>{quantity}</span><button disabled={!available} onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity"><FiPlus /></button></div><button className="add-button" disabled={!available} onClick={add}><FiShoppingBag /> {available ? 'Add' : 'Enquire'}</button></div></div>
     </div>
   </article>;
 }

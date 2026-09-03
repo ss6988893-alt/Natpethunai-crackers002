@@ -21,7 +21,7 @@ export default function Products() {
   const chooseCategory = (slug) => setParams(slug === 'all' ? {} : { category: slug });
 
   return <main id="main-content" className="products-page">
-    <PageIntro eyebrow="120 products from your PDF" title="Find your favourites." copy="Every available website price is calculated from the supplied PDF price plus 70%. Blank PDF prices are clearly marked for enquiry." />
+    <PageIntro eyebrow="120 products from your PDF" title="Find your favourites." copy="The bold selling price is the exact amount listed in your supplied PDF. Blank PDF prices are clearly marked for enquiry." />
     <section className="catalog-controls container-wide">
       <div className="catalog__toolbar"><label className="search"><FiSearch /><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search crackers or categories" aria-label="Search products" /></label><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></div>
       <div className="filter-row" aria-label="Product categories">

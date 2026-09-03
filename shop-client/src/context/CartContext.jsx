@@ -1,11 +1,16 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import { combos, products } from '../data/catalog';
 
 const CartContext = createContext(null);
 const STORAGE_KEY = 'ntc-cart-v1';
 
 function readCart() {
-  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    const currentItems = new Map([...products, ...combos].map((item) => [item.id, item]));
+    return saved.map((item) => currentItems.has(item.id) ? { ...item, ...currentItems.get(item.id), quantity: item.quantity } : item);
+  }
   catch { return []; }
 }
 
