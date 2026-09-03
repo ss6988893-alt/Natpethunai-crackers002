@@ -34,7 +34,7 @@ export default function ProductShowcase3D({ products, onAdd, onQuickView }) {
           const distance = Math.abs(offset);
           const hidden = distance > 2;
           return <motion.article key={product.id} className={`showcase-product ${offset === 0 ? 'is-active' : ''}`} animate={reducedMotion ? { opacity: offset === 0 ? 1 : 0 } : { x: `${offset * 76}%`, z: offset === 0 ? 90 : -180 - distance * 80, rotateY: offset * -22, scale: offset === 0 ? 1 : .76, opacity: hidden ? 0 : offset === 0 ? 1 : .38, filter: `blur(${offset === 0 ? 0 : distance * 3}px)` }} transition={{ type: 'spring', stiffness: 145, damping: 23 }} style={{ pointerEvents: hidden ? 'none' : 'auto', zIndex: 8 - distance }} onClick={() => offset !== 0 && setActive(index)}>
-            <button className="showcase-product__visual" onClick={() => offset === 0 && onQuickView(product)} aria-label={`Quick view ${product.name}`}><img src={product.image} alt={product.name} /><span>{product.discount}% off</span></button>
+            <button className="showcase-product__visual" onClick={() => offset === 0 && onQuickView(product)} aria-label={`Quick view ${product.name}`}><img src={product.image} alt={product.name} /><span>PDF price + 70%</span></button>
             <div className="showcase-product__copy"><p>{product.category}</p><h3>{product.name}</h3><strong>₹{product.price.toLocaleString('en-IN')}</strong>{offset === 0 && <button onClick={(event) => { event.stopPropagation(); flyProductToCart(event.currentTarget.closest('article').querySelector('img')); onAdd(product, 1); }}><FiPlus /> Add to cart</button>}</div>
           </motion.article>;
         })}

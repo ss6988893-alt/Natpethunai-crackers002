@@ -11,7 +11,7 @@ export default function HorizontalProductStory({ products, onQuickView }) {
   const { full } = useEffectsMode();
 
   useLayoutEffect(() => {
-    if (!full || !trackRef.current) return undefined;
+    if (!full || !trackRef.current || products.length < 4) return undefined;
     const context = gsap.context(() => {
       const cards = gsap.utils.toArray('.story-card');
       gsap.set(cards, { scale: .84, rotateY: 8, transformPerspective: 1000 });
@@ -20,6 +20,7 @@ export default function HorizontalProductStory({ products, onQuickView }) {
     return () => context.revert();
   }, [full, products]);
 
+  if (products.length < 4) return null;
   return <section ref={sectionRef} className="horizontal-story">
     <div className="container-wide story-heading"><p className="eyebrow">A journey through light</p><h2>Explore our fireworks collection.</h2></div>
     <div ref={trackRef} className="story-track">

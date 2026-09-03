@@ -9,6 +9,7 @@ function ProductCard({ product, onQuickView }) {
   const tiltRef = useRef(null);
   const imageRef = useRef(null);
   const { addToCart } = useCart();
+  const available = product.priceAvailable !== false;
   const handleMove = (event) => {
     if (!tiltRef.current || !window.matchMedia('(min-width: 900px) and (pointer: fine) and (prefers-reduced-motion: no-preference)').matches) return;
     const rect = tiltRef.current.getBoundingClientRect();
@@ -28,9 +29,9 @@ function ProductCard({ product, onQuickView }) {
     <div ref={tiltRef} className="product-card__tilt" onMouseMove={handleMove} onMouseLeave={resetTilt}>
       <button className="product-card__image" onClick={() => onQuickView(product)} aria-label={`Quick view ${product.name}`}>
         <motion.img ref={imageRef} layoutId={`product-image-${product.id}`} src={product.image} alt={product.name} loading="lazy" />
-        <span>-{product.discount}%</span><i><FiEye /> Quick view</i>
+        <span>{available ? '+70%' : 'Price pending'}</span><i><FiEye /> Quick view</i>
       </button>
-      <div className="product-card__body"><p>{product.category}</p><h3>{product.name}</h3><div className="price"><strong>₹{product.price.toLocaleString('en-IN')}</strong><del>₹{product.originalPrice.toLocaleString('en-IN')}</del></div><div className="product-card__actions"><div className="quantity"><button onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"><FiMinus /></button><span>{quantity}</span><button onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity"><FiPlus /></button></div><button className="add-button" onClick={add}><FiShoppingBag /> Add</button></div></div>
+      <div className="product-card__body"><p>{product.category}</p><h3>{product.name}</h3><div className="price">{available ? <><strong>₹{product.price.toLocaleString('en-IN')}</strong><small>PDF ₹{product.basePrice.toLocaleString('en-IN')} + 70%</small></> : <strong className="price-pending">Price on request</strong>}</div><div className="product-card__actions"><div className="quantity"><button disabled={!available} onClick={() => setQuantity(Math.max(1, quantity - 1))} aria-label="Decrease quantity"><FiMinus /></button><span>{quantity}</span><button disabled={!available} onClick={() => setQuantity(quantity + 1)} aria-label="Increase quantity"><FiPlus /></button></div><button className="add-button" disabled={!available} onClick={add}><FiShoppingBag /> {available ? 'Add' : 'Enquire'}</button></div></div>
     </div>
   </motion.article>;
 }

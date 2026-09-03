@@ -1,4 +1,24 @@
-import slugify from 'slugify'; import { connectDatabase,disconnectDatabase } from '../config/database.js'; import Category from '../models/Category.js'; import Combo from '../models/Combo.js'; import Product from '../models/Product.js';
-const names=['Sparklers','Flower Pots','Ground Chakkars','Rockets','Bombs','Fancy Crackers','Kids Crackers','Sound Crackers','Aerial Shots','Multi Colour Shots','Gift Boxes','Special Items','Combo Packs'];
-async function seed(){await connectDatabase();await Promise.all([Category.deleteMany({}),Product.deleteMany({}),Combo.deleteMany({})]);const categories=await Category.insertMany(names.map((name,index)=>({name,slug:slugify(name,{lower:true,strict:true}),description:`Curated ${name.toLowerCase()} collection`,displayOrder:index+1})));const adjectives=['Classic','Deluxe','Premium'];const docs=categories.flatMap((category,categoryIndex)=>adjectives.map((word,index)=>({name:`${word} ${category.name}`,slug:slugify(`${word} ${category.name}`,{lower:true,strict:true}),category:category._id,description:`A ${word.toLowerCase()} festive selection.`,image:'/assets/hero-fireworks.png',price:90+categoryIndex*45+index*70,originalPrice:140+categoryIndex*55+index*80,discount:20,featured:index===1})));await Product.insertMany(docs);await Combo.insertMany([3000,5000,7000,10000].map((price,index)=>({name:['Spark Celebration','Family Festival','Grand Night','Royal Sky'][index],slug:`combo-${price}`,price,originalPrice:Math.round(price*1.18),description:'A complete editable festive assortment.',image:'/assets/hero-fireworks.png',items:[{label:'Sparklers assortment',quantity:1},{label:'Flower pots',quantity:1},{label:'Ground chakkars',quantity:1}],featured:index===1})));console.log(`Seeded ${categories.length} categories, ${docs.length} products and 4 combos.`);await disconnectDatabase()}
-seed().catch(error=>{console.error(error);process.exit(1)});
+import slugify from 'slugify';
+import { connectDatabase, disconnectDatabase } from '../config/database.js';
+import Category from '../models/Category.js';
+import Combo from '../models/Combo.js';
+import Product from '../models/Product.js';
+import { priceListGroups } from '../data/priceList.js';
+
+async function seed() {
+  await connectDatabase();
+  await Promise.all([Category.deleteMany({}), Product.deleteMany({}), Combo.deleteMany({})]);
+  const categories = await Category.insertMany(priceListGroups.map((group, index) => ({ name: group.category, slug: group.slug, description: `${group.items.length} products from the official shop price list`, displayOrder: index + 1 })));
+  const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
+  const docs = priceListGroups.flatMap((group) => group.items.map(([sourceNumber, name, basePrice], productIndex) => {
+    const priceAvailable = Number.isFinite(basePrice);
+    return { name, slug: slugify(`${name}-${sourceNumber}`, { lower: true, strict: true }), category: categoryBySlug.get(group.slug)._id, description: priceAvailable ? `Website price includes 70% above the supplied PDF base price of Rs. ${basePrice}.` : 'Source PDF price was blank. Contact the shop for the current price.', image: '/assets/hero-fireworks.png', basePrice, price: priceAvailable ? Math.round(basePrice * 1.7) : 0, originalPrice: basePrice, priceAvailable, sourceNumber, packSize: name.match(/\((?:\d+\s?(?:pc|pcs)|\d+x\d+)\)/i)?.[0] || '', discount: 0, status: priceAvailable ? 'in-stock' : 'out-of-stock', featured: priceAvailable && productIndex === 0 };
+  }));
+  await Product.insertMany(docs);
+  await Combo.insertMany([3000, 5000, 7000, 10000].map((price, index) => ({ name: ['Spark Celebration', 'Family Festival', 'Grand Night', 'Royal Sky'][index], slug: `combo-${price}`, price, originalPrice: Math.round(price * 1.18), description: 'A complete editable festive assortment.', image: '/assets/hero-fireworks.png', items: [{ label: 'Sparklers assortment', quantity: 1 }, { label: 'Flower pots', quantity: 1 }, { label: 'Ground chakkars', quantity: 1 }], featured: index === 1 })));
+  const priced = docs.filter((item) => item.priceAvailable).length;
+  console.log(`Seeded ${categories.length} categories, ${docs.length} PDF products (${priced} priced, ${docs.length - priced} price on request) and 4 combos.`);
+  await disconnectDatabase();
+}
+
+seed().catch((error) => { console.error(error); process.exit(1); });

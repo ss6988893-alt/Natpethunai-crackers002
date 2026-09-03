@@ -27,8 +27,9 @@ export default function Products() {
   const { full, reducedMotion } = useEffectsMode();
   const category = params.get('category') || 'all';
   const categoryIndex = Math.max(0, categories.findIndex((item) => item.slug === category));
-  const visible = useMemo(() => products.filter((product) => (category === 'all' || product.categorySlug === category) && (`${product.name} ${product.category}`.toLowerCase().includes(search.toLowerCase()))).sort((a, b) => sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : Number(b.featured) - Number(a.featured)), [category, search, sort]);
-  const showcaseProducts = useMemo(() => [...visible.filter((product) => product.featured), ...visible.filter((product) => !product.featured)].slice(0, 7), [visible]);
+  const visible = useMemo(() => products.filter((product) => (category === 'all' || product.categorySlug === category) && (`${product.name} ${product.category}`.toLowerCase().includes(search.toLowerCase()))).sort((a, b) => { if (a.priceAvailable !== b.priceAvailable) return a.priceAvailable ? -1 : 1; return sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : Number(b.featured) - Number(a.featured); }), [category, search, sort]);
+  const availableProducts = useMemo(() => visible.filter((product) => product.priceAvailable), [visible]);
+  const showcaseProducts = useMemo(() => [...availableProducts.filter((product) => product.featured), ...availableProducts.filter((product) => !product.featured)].slice(0, 7), [availableProducts]);
   const chooseCategory = (slug) => { setParams(slug === 'all' ? {} : { category: slug }); setLimit(12); };
 
   useLayoutEffect(() => {
@@ -41,14 +42,14 @@ export default function Products() {
   }, [category, search, sort, limit, full, reducedMotion]);
 
   return <motion.main id="main-content" className="products-page" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-    <PageIntro eyebrow="Interactive digital showroom" title="Find your favourites." copy="Search quickly—or enter the 3D showroom and explore each collection through light, depth and motion." />
+    <PageIntro eyebrow="120 products from your PDF" title="Find your favourites." copy="Every available website price is calculated from the supplied PDF price plus 70%. Blank PDF prices are clearly marked for enquiry." />
     <section className="catalog-controls container-wide">
       <div className="catalog__toolbar"><label className="search"><FiSearch /><input value={search} onChange={(event) => { setSearch(event.target.value); setLimit(12); }} placeholder="Search crackers or categories" aria-label="Search products" /></label><select value={sort} onChange={(event) => setSort(event.target.value)} aria-label="Sort products"><option value="featured">Featured</option><option value="low">Price: low to high</option><option value="high">Price: high to low</option></select></div>
       <CategoryCarousel3D value={category} onChange={chooseCategory} />
     </section>
     <motion.div key={category} className="product-scene" initial={{ opacity: .3 }} animate={{ opacity: 1 }} transition={{ duration: .65 }} style={{ '--scene-hue': `${categoryIndex * 24 + 18}deg` }}>
       <ProductShowcase3D products={showcaseProducts} onAdd={addToCart} onQuickView={setQuickView} />
-      <HorizontalProductStory products={visible} onQuickView={setQuickView} />
+      <HorizontalProductStory products={availableProducts} onQuickView={setQuickView} />
       <section className="catalog container-wide" ref={gridRef}>
         <div className="catalog__meta"><div><p className="eyebrow">The complete shelf</p><strong>{visible.length} products</strong></div><span>Showing {Math.min(limit, visible.length)}</span></div>
         {visible.length ? <div className="product-grid">{visible.slice(0, limit).map((product) => <ProductCard key={product.id} product={product} onQuickView={setQuickView} />)}</div> : <div className="empty-state"><h2>No fireworks found</h2><p>Try another product name or collection.</p></div>}
