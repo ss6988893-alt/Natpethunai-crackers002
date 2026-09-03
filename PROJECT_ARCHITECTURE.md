@@ -2,9 +2,9 @@
 
 ## Runtime topology
 
-- `frontend/`: Vite + React JavaScript SPA. React Router owns public routes, CartContext owns device-local cart state, and REST services communicate with the API.
-- `backend/`: Node.js + Express REST service. MongoDB is authoritative for products, categories, combos, orders and enquiries. Nodemailer sends transactional mail; PDFKit generates estimate PDFs.
-- The frontend and backend deploy independently. The frontend can use static/edge hosting; Express requires a Node host and MongoDB Atlas (or another MongoDB server).
+- `shop-client/`: Vite + React JavaScript SPA. React Router owns public routes, CartContext owns device-local cart state, and REST services communicate with the API.
+- `shop-server/`: Node.js + Express REST service. MongoDB is authoritative for products, categories, combos, orders and enquiries. Nodemailer sends transactional mail; PDFKit generates estimate PDFs.
+- The client and server deploy independently. The client can use static/edge hosting; Express requires a Node host and MongoDB Atlas (or another MongoDB server).
 
 ## Frontend route map
 
@@ -63,7 +63,7 @@ All write routes use Zod validation, request-size limits, sanitization, rate lim
 
 ## Security and operations
 
-- Secrets exist only in `backend/.env`; the committed `.env.example` contains names, never credentials.
+- Secrets exist only in `shop-server/.env`; the committed `.env.example` contains names, never credentials.
 - CORS is allowlisted, Helmet sets browser protections, rate limits protect public writes, and Mongo-backed prices prevent cart tampering.
 - SMTP failure does not lose a successfully stored order; the API reports the order and logs mail delivery for retry.
 - PDF responses are generated from stored snapshots and include a prominent estimate-only disclaimer.
