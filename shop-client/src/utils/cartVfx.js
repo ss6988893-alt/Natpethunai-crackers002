@@ -21,3 +21,26 @@ export function flyProductToCart(imageElement) {
     window.setTimeout(() => target.classList.remove('cart-link--spark'), 300);
   };
 }
+
+export function burstProductSparks(element) {
+  if (!element || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const rect = element.getBoundingClientRect();
+  const colors = ['#ffd866', '#ff6b35', '#ffffff'];
+  const sparks = Array.from({ length: 9 }, (_, index) => {
+    const spark = document.createElement('span');
+    const angle = (Math.PI * 2 * index) / 9;
+    const distance = 24 + (index % 3) * 8;
+    spark.className = 'product-spark';
+    spark.style.left = `${rect.left + rect.width / 2}px`;
+    spark.style.top = `${rect.top + rect.height / 2}px`;
+    spark.style.background = colors[index % colors.length];
+    document.body.appendChild(spark);
+    const animation = spark.animate([
+      { transform: 'translate3d(-50%,-50%,0) scale(1)', opacity: 1 },
+      { transform: `translate3d(calc(-50% + ${Math.cos(angle) * distance}px),calc(-50% + ${Math.sin(angle) * distance}px),0) scale(0)`, opacity: 0 },
+    ], { duration: 430, easing: 'cubic-bezier(.2,.8,.2,1)' });
+    animation.onfinish = () => spark.remove();
+    return spark;
+  });
+  window.setTimeout(() => sparks.forEach((spark) => spark.remove()), 500);
+}

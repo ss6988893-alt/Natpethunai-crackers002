@@ -1,15 +1,16 @@
 import { memo, useRef, useState } from 'react';
 import { FiEye, FiMinus, FiPlus, FiShoppingBag } from 'react-icons/fi';
 import { useCart } from '../../context/CartContext';
-import { flyProductToCart } from '../../utils/cartVfx';
+import { burstProductSparks, flyProductToCart } from '../../utils/cartVfx';
 
 function ProductCard({ product, onQuickView }) {
   const [quantity, setQuantity] = useState(1);
   const imageRef = useRef(null);
   const { addToCart } = useCart();
   const available = product.priceAvailable !== false;
-  const add = () => {
+  const add = (event) => {
     imageRef.current?.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 260 });
+    burstProductSparks(event.currentTarget);
     flyProductToCart(imageRef.current);
     addToCart(product, quantity);
   };
