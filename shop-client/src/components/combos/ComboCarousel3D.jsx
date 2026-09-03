@@ -1,16 +1,23 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { FiCheck, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import useEffectsMode from '../../hooks/useEffectsMode';
 
 export default function ComboCarousel3D({ combos, onDetails, onAdd }) {
-  const [active, setActive] = useState(1);
+  const [active, setActive] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const { reducedMotion } = useEffectsMode();
   const move = (direction) => setActive((value) => (value + direction + combos.length) % combos.length);
 
+  useEffect(() => {
+    if (reducedMotion || isPaused || combos.length < 2) return undefined;
+    const timer = window.setInterval(() => setActive((value) => (value + 1) % combos.length), 2000);
+    return () => window.clearInterval(timer);
+  }, [combos.length, isPaused, reducedMotion]);
+
   return <section className="combo-showroom container-wide" aria-label="Combo packages">
     <div className="combo-showroom__heading"><div><p className="eyebrow">Four signature stages</p><h2>Choose the scale of your celebration.</h2></div><p>Swipe or use the arrows. Every package remains fully editable through its data record.</p></div>
-    <div className="combo-stage" tabIndex="0" onKeyDown={(event) => { if (event.key === 'ArrowLeft') move(-1); if (event.key === 'ArrowRight') move(1); }} onWheel={(event) => { if (Math.abs(event.deltaX) > 12) move(event.deltaX > 0 ? 1 : -1); }}>
+    <div className="combo-stage" tabIndex="0" onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)} onFocusCapture={() => setIsPaused(true)} onBlurCapture={(event) => { if (!event.currentTarget.contains(event.relatedTarget)) setIsPaused(false); }} onKeyDown={(event) => { if (event.key === 'ArrowLeft') move(-1); if (event.key === 'ArrowRight') move(1); }} onWheel={(event) => { if (Math.abs(event.deltaX) > 12) move(event.deltaX > 0 ? 1 : -1); }}>
       <button className="stage-arrow stage-arrow--left" onClick={() => move(-1)} aria-label="Previous combo"><FiChevronLeft /></button>
       <motion.div className="combo-stage__cards" onPanEnd={(_, info) => { if (Math.abs(info.offset.x) > 50) move(info.offset.x < 0 ? 1 : -1); }}>
         {combos.map((combo, index) => {
