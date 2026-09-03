@@ -106,3 +106,7 @@ button { cursor:pointer; }
 /* Lightweight shopping mode: content appears immediately without scroll locking. */
 .route-loader{min-height:220px;display:grid;place-items:center;color:#725a4f;font-size:.9rem}.products-page .product-scene{background:var(--paper)}.products-page .product-card[data-featured] .product-card__image img{animation:none}.product-category-group{content-visibility:auto;contain-intrinsic-size:auto 900px}
 @media(max-width:740px){.fireworks-canvas{display:none}}
+
+/* Compact reference-price treatment used throughout the product catalogue. */
+.product-card .price.price--deal,.quick-view__price.price--deal{display:flex;align-items:baseline;flex-direction:row;flex-wrap:nowrap;gap:.42rem;white-space:nowrap}.price--deal .price__change{color:#079348;font:800 1rem/1 'Manrope';letter-spacing:-.04em}.price--deal del{color:#827d79;text-decoration-thickness:2px;font-size:.92rem}.price--deal>strong{color:#302f31;font:800 1.32rem/1 'Manrope';letter-spacing:-.04em}.quick-view__price.price--deal{margin:1.5rem 0}.quick-view__price.price--deal .price__change{font-size:1.25rem}.quick-view__price.price--deal del{font-size:1.15rem}.quick-view__price.price--deal>strong{font-size:1.75rem}
+@media(max-width:520px){.product-card .price.price--deal{gap:.25rem}.product-card .price--deal .price__change{font-size:.78rem}.product-card .price--deal del{font-size:.72rem}.product-card .price--deal>strong{font-size:1rem}}
