@@ -5,7 +5,7 @@ export async function priceItems(requestedItems) {
   const lines = [];
   for (const requested of requestedItems) {
     const Model = requested.itemType === 'combo' ? Combo : Product;
-    const record = await Model.findOne({ slug: requested.slug }).populate(requested.itemType === 'product' ? 'category' : []).lean();
+    const record = await Model.findOne({ slug: requested.slug, ...(requested.itemType === 'product' ? { isActive: { $ne: false } } : {}) }).populate(requested.itemType === 'product' ? 'category' : []).lean();
     if (!record || record.status === 'out-of-stock' || record.status === 'inactive') {
       const error = new Error(`${requested.slug} is unavailable.`); error.status = 409; throw error;
     }

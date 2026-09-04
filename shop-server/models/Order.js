@@ -16,7 +16,7 @@ const orderSchema = new mongoose.Schema({
   orderId: { type: String, required: true, unique: true, index: true }, customer: { type: customerSchema, required: true },
   items: { type: [orderItemSchema], required: true }, subtotal: { type: Number, required: true },
   discount: { type: Number, default: 0 }, total: { type: Number, required: true },
-  orderStatus: { type: String, enum: ['request-received', 'contacted', 'confirmed', 'cancelled', 'fulfilled'], default: 'request-received', index: true },
+  orderStatus: { type: String, enum: ['new', 'confirmed', 'processing', 'ready', 'dispatched', 'delivered', 'cancelled', 'request-received', 'contacted', 'fulfilled'], default: 'new', index: true },
   emailStatus: { type: String, enum: ['pending', 'sent', 'skipped', 'failed'], default: 'pending' },
 }, { timestamps: true });
 

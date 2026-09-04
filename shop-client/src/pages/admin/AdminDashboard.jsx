@@ -1,0 +1,24 @@
+import { useEffect, useState } from 'react';
+import { ArrowDownRight, ArrowUpRight, Boxes, IndianRupee, PackageCheck, ShoppingBag, TriangleAlert, Users } from 'lucide-react';
+import { Area, AreaChart, Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { Link } from 'react-router-dom';
+import { adminApi } from '../../services/api';
+
+const money = (value = 0) => `₹${Math.round(value).toLocaleString('en-IN')}`;
+const cards = [
+  ['totalOrders', 'Total orders', ShoppingBag], ['ordersToday', 'Orders today', PackageCheck], ['totalRevenue', 'Total revenue', IndianRupee], ['todayRevenue', "Today's revenue", IndianRupee], ['weeklyRevenue', 'Weekly revenue', IndianRupee], ['monthlyRevenue', 'Monthly revenue', IndianRupee], ['totalProducts', 'Total products', Boxes], ['activeProducts', 'Active products', PackageCheck], ['outOfStock', 'Out of stock', TriangleAlert], ['lowStock', 'Low stock', TriangleAlert], ['totalCustomers', 'Customers', Users],
+];
+export default function AdminDashboard() {
+  const [dashboard, setDashboard] = useState(null); const [analytics, setAnalytics] = useState(null); const [error, setError] = useState('');
+  useEffect(() => { Promise.all([adminApi.dashboard(), adminApi.analytics({ range: 'last7Days' })]).then(([d, a]) => { setDashboard(d.data); setAnalytics(a.data); }).catch((e) => setError(e.response?.data?.message || 'Dashboard data is unavailable.')); }, []);
+  if (error) return <div className="admin-empty"><TriangleAlert/><h2>{error}</h2></div>; if (!dashboard) return <div className="admin-skeleton-grid">{Array.from({ length: 8 }, (_, i) => <i key={i}/>)}</div>;
+  const growth = dashboard.comparison.growth; const GrowthIcon = growth >= 0 ? ArrowUpRight : ArrowDownRight;
+  return <div className="admin-page"><div className="admin-page-title"><div><p>Live business overview</p><h1>Dashboard</h1></div><Link className="admin-primary" to="/admin/products/new">Add product</Link></div>
+    <section className="admin-stat-grid">{cards.map(([key, label, Icon]) => <article key={key}><span><Icon/></span><div><small>{label}</small><strong>{key.toLowerCase().includes('revenue') ? money(dashboard.cards[key]) : dashboard.cards[key]?.toLocaleString('en-IN')}</strong></div>{key === 'lowStock' && dashboard.cards[key] > 0 && <Link to="/admin/products?stock=low">Review</Link>}</article>)}</section>
+    <section className="admin-dashboard-grid"><article className="admin-panel admin-comparison"><header><div><small>Sales comparison</small><h2>Today vs yesterday</h2></div><span className={growth >= 0 ? 'positive' : 'negative'}><GrowthIcon/>{Math.abs(growth).toFixed(1)}%</span></header><div><p>Today<strong>{money(dashboard.comparison.today)}</strong></p><p>Yesterday<strong>{money(dashboard.comparison.yesterday)}</strong></p></div></article>
+      <article className="admin-panel admin-chart"><header><div><small>Last 7 days</small><h2>Orders and revenue</h2></div></header><ResponsiveContainer width="100%" height={280}><AreaChart data={analytics?.sales || []}><defs><linearGradient id="revenueFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#7c5cff" stopOpacity={.5}/><stop offset="1" stopColor="#7c5cff" stopOpacity={0}/></linearGradient></defs><CartesianGrid stroke="#e9eaf0" vertical={false}/><XAxis dataKey="date" tickFormatter={(v) => v.slice(5)} /><YAxis tickFormatter={(v) => `${Math.round(v / 1000)}k`}/><Tooltip formatter={(v) => money(v)}/><Area type="monotone" dataKey="revenue" stroke="#6d4aff" strokeWidth={3} fill="url(#revenueFill)"/></AreaChart></ResponsiveContainer></article>
+      <article className="admin-panel admin-chart"><header><div><small>Performance</small><h2>Top-selling products</h2></div><Link to="/admin/analytics">View analytics</Link></header><ResponsiveContainer width="100%" height={280}><BarChart data={(analytics?.topProducts || []).slice(0, 5)} layout="vertical"><CartesianGrid stroke="#e9eaf0" horizontal={false}/><XAxis type="number"/><YAxis type="category" dataKey="name" width={110}/><Tooltip/><Bar dataKey="quantity" fill="#f3a712" radius={[0, 8, 8, 0]}/></BarChart></ResponsiveContainer></article>
+      <article className="admin-panel admin-recent"><header><div><small>Latest activity</small><h2>Recent orders</h2></div><Link to="/admin/orders">All orders</Link></header><div className="admin-table-wrap"><table><thead><tr><th>Order</th><th>Customer</th><th>Amount</th><th>Date</th><th>Status</th></tr></thead><tbody>{dashboard.recentOrders.map((order) => <tr key={order._id}><td><Link to={`/admin/orders/${order._id}`}>{order.orderId}</Link></td><td>{order.customer?.name}</td><td>{money(order.total)}</td><td>{new Date(order.createdAt).toLocaleDateString('en-IN')}</td><td><span className={`status status-${order.orderStatus}`}>{order.orderStatus}</span></td></tr>)}</tbody></table></div></article>
+    </section>
+  </div>;
+}

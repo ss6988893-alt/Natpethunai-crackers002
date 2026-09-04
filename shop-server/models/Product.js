@@ -6,6 +6,8 @@ const productSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', required: true, index: true },
   description: { type: String, default: '', maxlength: 1200 },
   image: { type: String, default: '' },
+  images: [{ type: String }],
+  sku: { type: String, trim: true, unique: true, sparse: true, uppercase: true },
   price: { type: Number, required: true, min: 0 },
   basePrice: { type: Number, min: 0, default: null },
   priceAvailable: { type: Boolean, default: true, index: true },
@@ -15,6 +17,9 @@ const productSchema = new mongoose.Schema({
   discount: { type: Number, min: 0, max: 100, default: 0 },
   status: { type: String, enum: ['in-stock', 'low-stock', 'out-of-stock'], default: 'in-stock', index: true },
   featured: { type: Boolean, default: false, index: true },
+  stockQuantity: { type: Number, min: 0, default: 0, index: true },
+  lowStockThreshold: { type: Number, min: 0, default: 10 },
+  isActive: { type: Boolean, default: true, index: true },
 }, { timestamps: true });
 
 productSchema.index({ name: 'text', description: 'text' });

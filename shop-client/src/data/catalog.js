@@ -1,12 +1,11 @@
 import { priceListGroups } from './priceList.js';
 
 const slugify = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
 export const categories = priceListGroups.map((group, index) => ({
   id: group.slug,
   slug: group.slug,
   name: group.category,
-  description: `${group.items.length} products from the official shop price list`,
+  description: `${group.items.length} products available`,
   image: '/assets/hero-fireworks.png',
   order: index + 1,
 }));
@@ -21,7 +20,7 @@ export const products = priceListGroups.flatMap((group) => group.items.map(([sou
     name,
     category: group.category,
     categorySlug: group.slug,
-    description: priceAvailable ? `Official PDF price-list item. Your selling price is Rs. ${basePrice}.` : 'Listed in the supplied price list, but its source price was left blank. Please contact the shop for the current price.',
+    description: '',
     image: '/assets/hero-fireworks.png',
     basePrice,
     price: priceAvailable ? basePrice : 0,

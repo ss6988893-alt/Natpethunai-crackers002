@@ -1,0 +1,2 @@
+import { ShieldCheck } from 'lucide-react';
+export default function AdminSettings() { return <div className="admin-page"><div className="admin-page-title"><div><p>Configuration</p><h1>Settings</h1></div></div><section className="admin-panel admin-settings"><ShieldCheck/><div><h2>Security settings</h2><p>Admin credentials and JWT secrets are managed through protected server environment variables. Email, database and shop details continue to use the existing server configuration.</p><code>ADMIN_EMAIL · ADMIN_PASSWORD · JWT_SECRET</code></div></section></div>; }
