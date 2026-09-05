@@ -1,7 +1,9 @@
 import axios from 'axios';
 import { categories, combos, products } from '../data/catalog';
 
-const http = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api', timeout: 20000, withCredentials: true });
+const productionApiUrl = 'https://api.natpethunaicrackers.in/api';
+const apiUrl = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? productionApiUrl : '/api');
+const http = axios.create({ baseURL: apiUrl, timeout: 20000, withCredentials: true });
 const adminTokenKey = 'natpe_thunai_admin_token';
 
 http.interceptors.request.use((config) => {

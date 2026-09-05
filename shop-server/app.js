@@ -2,5 +2,21 @@ import compression from 'compression'; import cors from 'cors'; import express f
 import path from 'node:path'; import { env } from './config/env.js'; import { errorHandler, notFound } from './middleware/errors.js'; import adminRoutes from './routes/adminRoutes.js'; import catalogRoutes from './routes/catalogRoutes.js'; import contactRoutes from './routes/contactRoutes.js'; import orderRoutes from './routes/orderRoutes.js';
 
 export const app = express();
-app.set('trust proxy', 1); app.disable('x-powered-by'); app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } })); app.use(cors({ origin: env.frontendUrl.split(',').map((item) => item.trim()), credentials: true, methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type', 'Authorization'] })); app.use(compression()); app.use(express.json({ limit: '250kb' })); app.use(express.urlencoded({ extended: false, limit: '250kb' })); app.use('/uploads', express.static(path.resolve('uploads'), { maxAge: '30d', immutable: true })); if (env.nodeEnv !== 'test') app.use(morgan('combined'));
+const allowedOrigins = new Set([
+  ...env.frontendUrl.split(',').map((item) => item.trim().replace(/\/$/, '')),
+  'https://natpethunaicrackers.in',
+  'https://www.natpethunaicrackers.in',
+]);
+const corsOptions = {
+  origin(origin, callback) {
+    const normalizedOrigin = origin?.replace(/\/$/, '');
+    if (!origin || allowedOrigins.has(normalizedOrigin)) return callback(null, true);
+    return callback(null, false);
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
+app.set('trust proxy', 1); app.disable('x-powered-by'); app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } })); app.use(cors(corsOptions)); app.use(compression()); app.use(express.json({ limit: '250kb' })); app.use(express.urlencoded({ extended: false, limit: '250kb' })); app.use('/uploads', express.static(path.resolve('uploads'), { maxAge: '30d', immutable: true })); if (env.nodeEnv !== 'test') app.use(morgan('combined'));
 app.get('/api/health', (request, response) => response.json({ success: true, service: 'natpe-thunai-api', timestamp: new Date().toISOString() })); app.use('/api/admin', adminRoutes); app.use('/api', catalogRoutes); app.use('/api', orderRoutes); app.use('/api', contactRoutes); app.use(notFound); app.use(errorHandler);
