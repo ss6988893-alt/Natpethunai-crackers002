@@ -9,6 +9,7 @@ import Notification from '../models/Notification.js';
 import Order from '../models/Order.js';
 import OrderItem from '../models/OrderItem.js';
 import Product from '../models/Product.js';
+import { sendCustomerOrderAcceptedEmail } from '../services/emailService.js';
 
 const validOrders = { orderStatus: { $ne: 'cancelled' } };
 const startOfDay = (date = new Date()) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -70,7 +71,36 @@ export async function deleteCategory(request, response) { if (await Product.exis
 
 export async function adminOrders(request, response) { const page = Math.max(1, Number(request.query.page || 1)); const limit = Math.min(100, Math.max(1, Number(request.query.limit || 20))); const filter = request.query.status ? { orderStatus: request.query.status } : {}; const [data, total] = await Promise.all([Order.find(filter).sort({ createdAt: -1 }).skip((page - 1) * limit).limit(limit).lean(), Order.countDocuments(filter)]); response.json({ success: true, data, pagination: { page, limit, total, pages: Math.ceil(total / limit) } }); }
 export async function adminOrder(request, response) { const order = await Order.findById(request.params.id).lean(); if (!order) return response.status(404).json({ success: false, message: 'Order not found.' }); const items = await OrderItem.find({ order: order._id }).lean(); response.json({ success: true, data: { ...order, orderItems: items } }); }
-export async function updateOrderStatus(request, response) { const allowed = ['new', 'confirmed', 'processing', 'ready', 'dispatched', 'delivered', 'cancelled']; if (!allowed.includes(request.body.status)) return response.status(400).json({ success: false, message: 'Invalid order status.' }); const order = await Order.findByIdAndUpdate(request.params.id, { orderStatus: request.body.status }, { new: true }); if (!order) return response.status(404).json({ success: false, message: 'Order not found.' }); response.json({ success: true, data: order }); }
+export async function updateOrderStatus(request, response) {
+  const allowed = ['new', 'confirmed', 'processing', 'ready', 'dispatched', 'delivered', 'cancelled'];
+  if (!allowed.includes(request.body.status)) return response.status(400).json({ success: false, message: 'Invalid order status.' });
+  let order;
+  let isAcceptance = false;
+  if (request.body.status === 'confirmed') {
+    order = await Order.findOneAndUpdate(
+      { _id: request.params.id, orderStatus: { $in: ['new', 'request-received'] } },
+      { $set: { orderStatus: 'confirmed', acceptedAt: new Date() } },
+      { new: true },
+    );
+    isAcceptance = Boolean(order);
+  }
+  order ||= await Order.findById(request.params.id);
+  if (!order) return response.status(404).json({ success: false, message: 'Order not found.' });
+  order.orderStatus = request.body.status;
+  if (isAcceptance) {
+    try {
+      const delivery = await sendCustomerOrderAcceptedEmail(order.toObject());
+      order.customerNotificationStatus = delivery.status;
+      if (delivery.status === 'sent') order.customerNotifiedAt = new Date();
+    } catch (error) {
+      console.error('Customer acceptance email failed', error);
+      order.customerNotificationStatus = 'failed';
+    }
+  }
+  await order.save();
+  const notificationMessages = { sent: 'Order accepted and the customer was emailed.', skipped: 'Order accepted, but customer email was not sent because email is missing or SMTP is not configured.', failed: 'Order accepted, but the customer email failed.' };
+  response.json({ success: true, message: isAcceptance ? notificationMessages[order.customerNotificationStatus] : 'Order status updated.', data: order, notificationStatus: isAcceptance ? order.customerNotificationStatus : undefined });
+}
 export async function customers(request, response) { const page = Math.max(1, Number(request.query.page || 1)); const limit = 25; const [data, total] = await Promise.all([Customer.find().sort({ lastOrderAt: -1 }).skip((page - 1) * limit).limit(limit).lean(), Customer.countDocuments()]); response.json({ success: true, data, pagination: { page, limit, total, pages: Math.ceil(total / limit) } }); }
 export async function notifications(request, response) { response.json({ success: true, data: await Notification.find().sort({ createdAt: -1 }).limit(50).lean() }); }
 export async function readNotification(request, response) { await Notification.findByIdAndUpdate(request.params.id, { read: true }); response.json({ success: true }); }

@@ -18,6 +18,9 @@ const orderSchema = new mongoose.Schema({
   discount: { type: Number, default: 0 }, total: { type: Number, required: true },
   orderStatus: { type: String, enum: ['new', 'confirmed', 'processing', 'ready', 'dispatched', 'delivered', 'cancelled', 'request-received', 'contacted', 'fulfilled'], default: 'new', index: true },
   emailStatus: { type: String, enum: ['pending', 'sent', 'skipped', 'failed'], default: 'pending' },
+  customerNotificationStatus: { type: String, enum: ['pending', 'sent', 'skipped', 'failed'], default: 'pending' },
+  acceptedAt: Date,
+  customerNotifiedAt: Date,
 }, { timestamps: true });
 
 export default mongoose.model('Order', orderSchema);
