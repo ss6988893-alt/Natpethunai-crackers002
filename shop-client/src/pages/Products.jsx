@@ -18,10 +18,10 @@ export default function Products() {
   const { addToCart } = useCart();
   const category = params.get('category') || 'all';
   useEffect(() => { Promise.all([getProducts({ limit: 250 }), getCategories()]).then(([productResult, categoryResult]) => { setProducts(productResult.data); setCategories(categoryResult.data); }).finally(() => setLoading(false)); }, []);
-  const visible = useMemo(() => products.filter((product) => (category === 'all' || product.categorySlug === category) && (`${product.name} ${product.category}`.toLowerCase().includes(search.toLowerCase()))).sort((a, b) => { if (a.priceAvailable !== b.priceAvailable) return a.priceAvailable ? -1 : 1; return sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : Number(b.featured) - Number(a.featured); }), [category, search, sort]);
+  const visible = useMemo(() => products.filter((product) => (category === 'all' || product.categorySlug === category) && (`${product.name} ${product.category}`.toLowerCase().includes(search.toLowerCase()))).sort((a, b) => { if (a.priceAvailable !== b.priceAvailable) return a.priceAvailable ? -1 : 1; return sort === 'low' ? a.price - b.price : sort === 'high' ? b.price - a.price : Number(b.featured) - Number(a.featured); }), [products, category, search, sort]);
   const groupedProducts = useMemo(() => categories
     .map((item) => ({ ...item, products: visible.filter((product) => product.categorySlug === item.slug) }))
-    .filter((item) => item.products.length > 0), [visible]);
+    .filter((item) => item.products.length > 0), [categories, visible]);
   const chooseCategory = (slug) => setParams(slug === 'all' ? {} : { category: slug });
 
   return <main id="main-content" className="products-page">
