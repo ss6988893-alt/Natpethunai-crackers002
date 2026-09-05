@@ -2,6 +2,13 @@ import axios from 'axios';
 import { categories, combos, products } from '../data/catalog';
 
 const http = axios.create({ baseURL: import.meta.env.VITE_API_URL || '/api', timeout: 20000, withCredentials: true });
+const adminTokenKey = 'natpe_thunai_admin_token';
+
+http.interceptors.request.use((config) => {
+  const token = sessionStorage.getItem(adminTokenKey);
+  if (token && String(config.url || '').startsWith('/admin/')) config.headers.Authorization = `Bearer ${token}`;
+  return config;
+});
 
 const fallback = (data) => ({ data, demo: true });
 
@@ -24,8 +31,11 @@ export const submitOrder = (payload) => http.post('/orders', payload).then((resp
 export const submitEnquiry = (payload) => http.post('/contact', payload).then((response) => response.data);
 export const orderPdfUrl = (orderId) => `${http.defaults.baseURL}/orders/${encodeURIComponent(orderId)}/pdf`;
 export const adminApi = {
-  login: (payload) => http.post('/admin/auth/login', payload).then((response) => response.data),
-  logout: () => http.post('/admin/auth/logout').then((response) => response.data),
+  login: (payload) => http.post('/admin/auth/login', payload).then((response) => {
+    if (response.data.token) sessionStorage.setItem(adminTokenKey, response.data.token);
+    return response.data;
+  }),
+  logout: () => http.post('/admin/auth/logout').then((response) => response.data).finally(() => sessionStorage.removeItem(adminTokenKey)),
   me: () => http.get('/admin/auth/me').then((response) => response.data),
   dashboard: (params) => http.get('/admin/dashboard', { params }).then((response) => response.data),
   analytics: (params) => http.get('/admin/analytics', { params }).then((response) => response.data),
