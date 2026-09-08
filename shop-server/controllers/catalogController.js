@@ -1,6 +1,7 @@
 import Category from '../models/Category.js';
 import Combo from '../models/Combo.js';
 import Product from '../models/Product.js';
+export { serveProductImage } from '../services/productImageService.js';
 
 export async function listProducts(request, response) {
   const page = Math.max(1, Number(request.query.page || 1)); const limit = Math.min(250, Math.max(1, Number(request.query.limit || 24)));

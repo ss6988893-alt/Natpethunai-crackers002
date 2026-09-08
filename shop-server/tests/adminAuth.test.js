@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import request from 'supertest';
 import { MongoMemoryServer } from 'mongodb-memory-server';
+import sharp from 'sharp';
 
 process.env.NODE_ENV = 'test';
 process.env.SMTP_HOST = '';
@@ -9,6 +10,7 @@ const { app } = await import('../app.js');
 const { connectDatabase, disconnectDatabase } = await import('../config/database.js');
 const { ensureInitialAdmin } = await import('../utils/ensureInitialAdmin.js');
 const { default: Order } = await import('../models/Order.js');
+const { default: Category } = await import('../models/Category.js');
 
 test('configured admin can log in and authenticate with the returned token', async () => {
   const database = await MongoMemoryServer.create();
@@ -54,6 +56,25 @@ test('configured admin can log in and authenticate with the returned token', asy
     assert.equal(accepted.body.data.orderStatus, 'confirmed');
     assert.equal(accepted.body.notificationStatus, 'skipped');
     assert.ok(accepted.body.data.acceptedAt);
+
+    const category = await Category.create({ name: 'Upload Test', slug: 'upload-test' });
+    const png = await sharp({ create: { width: 2, height: 2, channels: 3, background: '#f4b41a' } }).png().toBuffer();
+    const created = await request(app)
+      .post('/api/admin/products')
+      .set('Authorization', `Bearer ${login.body.token}`)
+      .field('name', 'Uploaded Product')
+      .field('category', String(category._id))
+      .field('price', '100')
+      .field('stockQuantity', '5')
+      .field('isActive', 'true')
+      .attach('images', png, { filename: 'product.png', contentType: 'image/png' });
+    assert.equal(created.status, 201);
+    assert.match(created.body.data.image, /\/api\/product-images\/[a-f\d]{24}$/i);
+
+    const storedImage = await request(app).get(new URL(created.body.data.image).pathname);
+    assert.equal(storedImage.status, 200);
+    assert.match(storedImage.headers['content-type'], /image\/webp/);
+    assert.ok(storedImage.body.length > 0);
   } finally {
     await disconnectDatabase();
     await database.stop();

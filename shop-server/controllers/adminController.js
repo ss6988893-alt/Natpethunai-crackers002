@@ -1,7 +1,3 @@
-import crypto from 'node:crypto';
-import fs from 'node:fs/promises';
-import path from 'node:path';
-import sharp from 'sharp';
 import slugify from 'slugify';
 import Category from '../models/Category.js';
 import Customer from '../models/Customer.js';
@@ -10,6 +6,7 @@ import Order from '../models/Order.js';
 import OrderItem from '../models/OrderItem.js';
 import Product from '../models/Product.js';
 import { sendCustomerOrderAcceptedEmail } from '../services/emailService.js';
+import { deleteProductImages, saveProductImages } from '../services/productImageService.js';
 
 const validOrders = { orderStatus: { $ne: 'cancelled' } };
 const startOfDay = (date = new Date()) => new Date(date.getFullYear(), date.getMonth(), date.getDate());
@@ -54,15 +51,27 @@ export async function adminProducts(request, response) {
   response.json({ success: true, data, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
 }
 
-async function saveImages(files = []) {
-  if (!files.length) return []; const directory = path.resolve('uploads/products'); await fs.mkdir(directory, { recursive: true });
-  return Promise.all(files.map(async (file) => { const name = `${Date.now()}-${crypto.randomUUID()}.webp`; await sharp(file.buffer).rotate().resize(1400, 1400, { fit: 'inside', withoutEnlargement: true }).webp({ quality: 82 }).toFile(path.join(directory, name)); return `/uploads/products/${name}`; }));
-}
 const boolean = (value, fallback = false) => value === undefined ? fallback : value === true || value === 'true';
 const productPayload = (body) => ({ name: body.name, sku: body.sku || undefined, category: body.category, description: body.description || '', originalPrice: Number(body.originalPrice || 0), price: Number(body.price), discount: Number(body.discount || 0), stockQuantity: Number(body.stockQuantity || 0), status: body.status || (Number(body.stockQuantity) > 0 ? 'in-stock' : 'out-of-stock'), featured: boolean(body.featured), isActive: boolean(body.isActive, true), priceAvailable: true });
-export async function createProduct(request, response) { const images = await saveImages(request.files); const data = productPayload(request.body); data.slug = `${slugify(data.name, { lower: true, strict: true })}-${Date.now().toString(36)}`; data.images = images; data.image = images[0] || ''; const product = await Product.create(data); response.status(201).json({ success: true, data: product }); }
-export async function updateProduct(request, response) { const product = await Product.findById(request.params.id); if (!product) return response.status(404).json({ success: false, message: 'Product not found.' }); const images = await saveImages(request.files); Object.assign(product, productPayload(request.body)); if (images.length) { product.images = images; product.image = images[0]; } await product.save(); response.json({ success: true, data: product }); }
-export async function deleteProduct(request, response) { const product = await Product.findByIdAndDelete(request.params.id); if (!product) return response.status(404).json({ success: false, message: 'Product not found.' }); response.json({ success: true }); }
+export async function createProduct(request, response) {
+  const images = await saveProductImages(request.files, request);
+  try {
+    const data = productPayload(request.body); data.slug = `${slugify(data.name, { lower: true, strict: true })}-${Date.now().toString(36)}`; data.images = images; data.image = images[0] || '';
+    const product = await Product.create(data);
+    response.status(201).json({ success: true, data: product });
+  } catch (error) { await deleteProductImages(images); throw error; }
+}
+export async function updateProduct(request, response) {
+  const product = await Product.findById(request.params.id); if (!product) return response.status(404).json({ success: false, message: 'Product not found.' });
+  const images = await saveProductImages(request.files, request); const previousImages = product.images?.length ? product.images : [product.image].filter(Boolean);
+  try {
+    Object.assign(product, productPayload(request.body)); if (images.length) { product.images = images; product.image = images[0]; }
+    await product.save();
+  } catch (error) { await deleteProductImages(images); throw error; }
+  if (images.length) await deleteProductImages(previousImages);
+  response.json({ success: true, data: product });
+}
+export async function deleteProduct(request, response) { const product = await Product.findByIdAndDelete(request.params.id); if (!product) return response.status(404).json({ success: false, message: 'Product not found.' }); await deleteProductImages(product.images?.length ? product.images : [product.image].filter(Boolean)); response.json({ success: true }); }
 
 export async function adminCategories(request, response) { response.json({ success: true, data: await Category.find().sort({ displayOrder: 1, name: 1 }).lean() }); }
 export async function createCategory(request, response) { const name = String(request.body.name || '').trim(); if (name.length < 2) return response.status(400).json({ success: false, message: 'Category name is required.' }); const item = await Category.create({ name, slug: slugify(name, { lower: true, strict: true }), description: request.body.description || '', image: request.body.image || '', displayOrder: Number(request.body.displayOrder || 0), isActive: boolean(request.body.isActive, true) }); response.status(201).json({ success: true, data: item }); }
