@@ -10,7 +10,7 @@ import { getCategories, getProducts } from '../services/api';
 export default function Products() {
   const [params, setParams] = useSearchParams();
   const [search, setSearch] = useState('');
-  const [sort, setSort] = useState('featured');
+  const [sort, setSort] = useState('low');
   const [quickView, setQuickView] = useState(null);
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
