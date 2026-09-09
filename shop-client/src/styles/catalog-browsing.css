@@ -1,0 +1,12 @@
+.products-page .products-content { scroll-margin-top: 100px; }
+.products-page .catalog-explore { margin-top: clamp(3rem, 7vw, 5rem); }
+.products-page .catalog-explore .load-more { display: flex; width: fit-content; max-width: 100%; }
+.products-page .product-category-heading h2 { overflow-wrap: anywhere; line-height: 1.1; }
+.products-page .catalog-results { animation: catalog-enter 180ms ease-out; }
+@keyframes catalog-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .products-page .catalog-results { animation: none; }
+}
