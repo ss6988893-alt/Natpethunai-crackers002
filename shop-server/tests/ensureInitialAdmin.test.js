@@ -30,3 +30,31 @@ test('configured credentials update an existing matching administrator', async (
   assert.equal(existing.passwordHash, 'hash:new-secure-password');
   assert.equal(existing.active, true);
 });
+
+test('owner-managed credentials are not overwritten during startup', async () => {
+  let saved = false;
+  const existing = {
+    email: 'owner@example.com',
+    username: 'chosen-owner',
+    passwordHash: 'owner-managed-hash',
+    credentialsUpdatedAt: new Date(),
+    save: async () => { saved = true; },
+  };
+  class FakeAdmin {
+    static find() { return { select: async () => [existing] }; }
+  }
+
+  await ensureInitialAdmin({
+    AdminModel: FakeAdmin,
+    environment: {
+      ADMIN_NAME: 'Store Owner',
+      ADMIN_EMAIL: 'OWNER@EXAMPLE.COM',
+      ADMIN_USERNAME: 'environment-owner',
+      ADMIN_PASSWORD: 'environment-password',
+    },
+  });
+
+  assert.equal(saved, false);
+  assert.equal(existing.username, 'chosen-owner');
+  assert.equal(existing.passwordHash, 'owner-managed-hash');
+});

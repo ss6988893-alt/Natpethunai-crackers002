@@ -39,6 +39,10 @@ export const adminApi = {
   }),
   logout: () => http.post('/admin/auth/logout').then((response) => response.data).finally(() => sessionStorage.removeItem(adminTokenKey)),
   me: () => http.get('/admin/auth/me').then((response) => response.data),
+  updateCredentials: (payload) => http.put('/admin/auth/credentials', payload).then((response) => {
+    if (response.data.token) sessionStorage.setItem(adminTokenKey, response.data.token);
+    return response.data;
+  }),
   dashboard: (params) => http.get('/admin/dashboard', { params }).then((response) => response.data),
   analytics: (params) => http.get('/admin/analytics', { params }).then((response) => response.data),
   products: (params) => http.get('/admin/products', { params }).then((response) => response.data),

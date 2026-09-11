@@ -13,8 +13,9 @@ export async function requireAdmin(request, response, next) {
     const token = tokenFrom(request);
     if (!token) return response.status(401).json({ success: false, message: 'Admin authentication required.' });
     const payload = jwt.verify(token, env.jwtSecret, { issuer: 'natpe-thunai-api', audience: 'natpe-thunai-admin' });
-    const admin = await Admin.findOne({ _id: payload.sub, active: true }).select('name email username role');
+    const admin = await Admin.findOne({ _id: payload.sub, active: true }).select('name email username role tokenVersion');
     if (!admin) return response.status(401).json({ success: false, message: 'Admin session is no longer valid.' });
+    if ((payload.ver ?? 0) !== (admin.tokenVersion || 0)) return response.status(401).json({ success: false, message: 'Admin session is no longer valid. Please sign in again.' });
     request.admin = admin; return next();
   } catch { return response.status(401).json({ success: false, message: 'Admin session expired. Please sign in again.' }); }
 }

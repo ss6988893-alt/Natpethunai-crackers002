@@ -8,6 +8,8 @@ const adminSchema = new mongoose.Schema({
   passwordHash: { type: String, required: true, select: false },
   role: { type: String, enum: ['admin', 'manager'], default: 'admin' },
   active: { type: Boolean, default: true },
+  tokenVersion: { type: Number, default: 0, min: 0 },
+  credentialsUpdatedAt: Date,
   lastLoginAt: Date,
 }, { timestamps: true });
 

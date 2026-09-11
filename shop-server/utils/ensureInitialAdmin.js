@@ -19,6 +19,10 @@ export async function ensureInitialAdmin({ AdminModel = Admin, environment = pro
   }
 
   const admin = matches[0] || new AdminModel();
+  if (admin.credentialsUpdatedAt) {
+    console.log(`Owner-managed admin account ready for ${admin.email}`);
+    return;
+  }
   const passwordMatches = admin.passwordHash ? await admin.verifyPassword(password) : false;
   admin.name = environment.ADMIN_NAME?.trim() || 'Shop Administrator';
   admin.email = email;
