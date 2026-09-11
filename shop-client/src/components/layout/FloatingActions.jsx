@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { FiArrowUp, FiMessageCircle } from 'react-icons/fi';
 
-const ownerPhone = '918524090862';
+const ownerPhone = '916381149143';
 const message = encodeURIComponent('Hi, I visited your website and I would like to enquire about crackers.');
 
 export default function FloatingActions() {

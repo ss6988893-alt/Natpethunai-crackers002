@@ -17,7 +17,7 @@ export const env = {
   shop: {
     name: process.env.SHOP_NAME || 'Natpe Thunai Crackers',
     address: process.env.SHOP_ADDRESS || 'Shop address to be configured',
-    phone: process.env.SHOP_PHONE || '+91XXXXXXXXXX',
+    phone: process.env.SHOP_PHONE || '+916381149143',
     email: process.env.SHOP_EMAIL || 'orders@example.com',
   },
   ownerEmail: process.env.OWNER_EMAIL,

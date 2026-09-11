@@ -41,7 +41,7 @@ export default function Home() {
           </div>
           <motion.div className="hero__art" initial={{ opacity: 0, scale: .92, rotateY: -8 }} animate={{ opacity: 1, scale: 1, rotateY: 0 }} transition={{ duration: 1, delay: .2 }}>
             <img src="/assets/shop-banner.webp" alt="Natpe Thunai Crackers festive product collection and shop banner" fetchPriority="high" />
-            <div className="hero__art-label"><span>Order enquiries</span><strong>+91 85240 90862</strong></div>
+            <div className="hero__art-label"><span>Order enquiries</span><strong>+91 63811 49143</strong></div>
           </motion.div>
         </div>
       </section>

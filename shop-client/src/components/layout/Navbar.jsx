@@ -28,7 +28,7 @@ export default function Navbar() {
           {links.map(([to, label]) => <NavLink key={to} to={to} end={to === '/'}>{label}</NavLink>)}
         </nav>
         <div className="nav-actions">
-          <a className="nav-phone" href="tel:+918524090862" aria-label="Call Natpe Thunai Crackers"><FiPhone /><span>85240 90862</span></a>
+          <a className="nav-phone" href="tel:+916381149143" aria-label="Call Natpe Thunai Crackers"><FiPhone /><span>63811 49143</span></a>
           <motion.div key={cartPulse} animate={{ scale: [1, 1.16, 1] }} transition={{ duration: .32 }}>
             <Link className="cart-link" to="/cart" aria-label={`Cart with ${getCartCount()} items`}>
               <FiShoppingBag /><span>{getCartCount()}</span>

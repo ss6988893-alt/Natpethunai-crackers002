@@ -5,7 +5,7 @@ import PageIntro from '../components/layout/PageIntro';
 import { submitEnquiry } from '../services/api';
 
 const locationUrl = 'https://www.google.com/maps?q=9.5036621,77.8277664';
-const whatsappUrl = 'https://wa.me/918524090862?text=Hi%2C%20I%20visited%20your%20website%20and%20I%20would%20like%20to%20enquire%20about%20crackers.';
+const whatsappUrl = 'https://wa.me/916381149143?text=Hi%2C%20I%20visited%20your%20website%20and%20I%20would%20like%20to%20enquire%20about%20crackers.';
 
 export default function Contact() {
   const { register, handleSubmit, reset, formState: { isSubmitting } } = useForm();
@@ -27,8 +27,8 @@ export default function Contact() {
           <p className="eyebrow">Contact details</p>
           <h2>Natpe Thunai Crackers</h2>
           <a className="contact-line" href={locationUrl} target="_blank" rel="noreferrer"><FiMapPin /><span>Virudhunagar to Sivakasi Road<br />Aathupalam, Sivakasi, Tamil Nadu</span></a>
-          <a className="contact-line" href="tel:+918524090862"><FiPhone /><span>+91 85240 90862 <small>Owner & WhatsApp</small></span></a>
-          <a className="contact-line" href="tel:+918344806268"><FiPhone /><span>+91 83448 06268 <small>Additional contact</small></span></a>
+          <a className="contact-line" href="tel:+916381149143"><FiPhone /><span>+91 63811 49143 <small>Owner & WhatsApp</small></span></a>
+          <a className="contact-line" href="tel:+916383409255"><FiPhone /><span>+91 63834 09255 <small>Additional contact</small></span></a>
           <a className="contact-line" href={whatsappUrl} target="_blank" rel="noreferrer"><FiMessageCircle /><span>Chat with us on WhatsApp</span></a>
           <a className="contact-line" href="https://www.instagram.com/natpe_thunai_crakers" target="_blank" rel="noreferrer"><FiInstagram /><span>@natpe_thunai_crakers</span></a>
           <p className="contact-line"><FiClock /><span>Open daily: 9:00 AM – 8:00 PM</span></p>
