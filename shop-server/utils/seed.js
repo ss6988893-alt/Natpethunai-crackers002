@@ -10,9 +10,9 @@ async function seed() {
   await Promise.all([Category.deleteMany({}), Product.deleteMany({}), Combo.deleteMany({})]);
   const categories = await Category.insertMany(priceListGroups.map((group, index) => ({ name: group.category, slug: group.slug, description: `${group.items.length} products available`, displayOrder: index + 1 })));
   const categoryBySlug = new Map(categories.map((category) => [category.slug, category]));
-  const docs = priceListGroups.flatMap((group) => group.items.map(([sourceNumber, name, basePrice], productIndex) => {
+  const docs = priceListGroups.flatMap((group) => group.items.map(([sourceNumber, name, basePrice, listPrice], productIndex) => {
     const priceAvailable = Number.isFinite(basePrice);
-    const originalPrice = priceAvailable ? Math.round(basePrice * 1.7) : 0;
+    const originalPrice = priceAvailable && Number.isFinite(listPrice) ? listPrice : 0;
     return { name, slug: slugify(`${name}-${sourceNumber}`, { lower: true, strict: true }), category: categoryBySlug.get(group.slug)._id, description: '', image: '/assets/hero-fireworks.png', basePrice, price: priceAvailable ? basePrice : 0, originalPrice, priceAvailable, sourceNumber, packSize: name.match(/\((?:\d+\s?(?:pc|pcs)|\d+x\d+)\)/i)?.[0] || '', discount: priceAvailable ? Math.round((1 - basePrice / originalPrice) * 100) : 0, stockQuantity: priceAvailable ? 100 : 0, isActive: true, status: priceAvailable ? 'in-stock' : 'out-of-stock', featured: priceAvailable && productIndex === 0 };
   }));
   await Product.insertMany(docs);

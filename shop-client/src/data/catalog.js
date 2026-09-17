@@ -10,9 +10,9 @@ export const categories = priceListGroups.map((group, index) => ({
   order: index + 1,
 }));
 
-export const products = priceListGroups.flatMap((group) => group.items.map(([sourceNumber, name, basePrice], productIndex) => {
+export const products = priceListGroups.flatMap((group) => group.items.map(([sourceNumber, name, basePrice, listPrice], productIndex) => {
   const priceAvailable = Number.isFinite(basePrice);
-  const originalPrice = priceAvailable ? Math.round(basePrice * 1.7) : 0;
+  const originalPrice = priceAvailable && Number.isFinite(listPrice) ? listPrice : 0;
   return {
     id: `pdf-${sourceNumber.toLowerCase()}`,
     sourceNumber,
