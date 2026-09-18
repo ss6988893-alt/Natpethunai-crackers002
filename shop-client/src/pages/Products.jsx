@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FiSearch } from 'react-icons/fi';
+import { FiSearch, FiGrid, FiChevronDown } from 'react-icons/fi';
 import { useSearchParams } from 'react-router-dom';
 import PageIntro from '../components/layout/PageIntro';
 import ProductQuickView from '../components/products/ProductQuickView';
@@ -16,6 +16,7 @@ export default function Products() {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
   const resultsRef = useRef(null);
   const scrollRequested = useRef(false);
   const { addToCart } = useCart();
@@ -53,6 +54,7 @@ export default function Products() {
     .map((item) => ({ ...item, products: visible.filter((product) => product.categorySlug === item.slug) }))
     .filter((item) => item.products.length > 0), [categories, visible]);
   const chooseCategory = (slug) => {
+    setCategoriesOpen(false);
     if (slug === category) return;
     scrollRequested.current = true;
     setParams((current) => {
@@ -74,9 +76,14 @@ export default function Products() {
     <PageIntro eyebrow="Our complete collection" title="Find your favourites." copy="Explore every category, compare prices and add your favourite crackers to the cart." />
     <div className="product-scene">
       <section className="products-layout container-wide">
-        <aside className="category-sidebar" aria-label="Product categories">
+        <aside className={`category-sidebar ${categoriesOpen ? 'category-sidebar--open' : ''}`} aria-label="Product categories">
+          <button className="category-picker" aria-expanded={categoriesOpen} aria-controls="category-options" onClick={() => setCategoriesOpen((value) => !value)}>
+            <span className="category-picker__icon"><FiGrid /></span>
+            <span className="category-picker__copy"><small>Find your celebration</small><strong>{category === 'all' ? 'All crackers' : selectedCategory?.name || 'Choose a category'}</strong></span>
+            <span className="category-picker__action">Browse <FiChevronDown /></span>
+          </button>
           <p className="eyebrow">Browse categories</p>
-          <nav className="filter-row">
+          <nav className="filter-row" id="category-options">
             <button aria-pressed={category === 'all'} className={category === 'all' ? 'active' : ''} onClick={() => chooseCategory('all')}>All products <span>{products.length}</span></button>
             {categories.map((item) => <button key={item.slug} aria-pressed={category === item.slug} className={category === item.slug ? 'active' : ''} onClick={() => chooseCategory(item.slug)}>{item.name} <span>{categoryCounts.get(item.slug) || 0}</span></button>)}
           </nav>

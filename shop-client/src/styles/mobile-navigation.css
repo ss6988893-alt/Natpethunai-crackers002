@@ -1,0 +1,26 @@
+@media (max-width: 740px) {
+  .navbar .navbar__inner { position: relative; z-index: 2; }
+  .navbar .menu-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: 76px; height: 42px; border-radius: 14px; border: 1px solid #f6c45366; background: linear-gradient(135deg, #ffe49c, #f6b91e); color: #29190d; box-shadow: 0 4px 16px #f6b91e20; }
+  .menu-button__label { font-size: 11px; font-weight: 800; }
+  .menu-button__symbol { display: grid; grid-template-columns: repeat(2, 5px); gap: 3px; transform: rotate(-8deg); transition: transform .2s; }
+  .menu-button__symbol i { width: 5px; height: 5px; background: currentColor; border-radius: 1.5px; }
+  .menu-button[aria-expanded='true'] .menu-button__symbol { transform: rotate(45deg); }
+  .navbar .mobile-nav { inset: 70px 10px auto; max-height: calc(100dvh - 90px); overflow-y: auto; padding: 22px 20px; gap: 6px; border: 1px solid #f6c45344; border-radius: 24px; background: radial-gradient(ellipse at top right, #70422055, transparent 65%), #17101f; box-shadow: 0 24px 60px #0008; }
+  .mobile-nav__eyebrow { margin: 0 0 12px; color: #e8be72; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+  .navbar .mobile-nav a { display: flex; align-items: center; gap: 14px; padding: 16px 10px; color: #fff6e6; font: 700 26px/1.2 'Manrope', sans-serif; border-bottom: 1px solid #ffffff14; }
+  .navbar .mobile-nav a small { font-size: 10px; color: #c8a76e; }
+  .navbar .mobile-nav a > span { flex: 1; }
+  .navbar .mobile-nav a > svg { width: 19px; }
+  .navbar .mobile-nav a.active { background: #f6c45312; border-radius: 12px; color: #ffcf65; }
+  .navbar .mobile-nav .mobile-nav__call { flex-wrap: wrap; gap: 8px; margin-top: 12px; border: 0; color: #e5c184; font-size: 12px; line-height: 1.5; }
+  .navbar .mobile-nav .mobile-nav__call span { flex-basis: 100%; padding-left: 27px; color: #fff6e6; font-size: 16px; }
+}
+@media (max-width: 380px) {
+  .navbar .nav-actions { gap: 6px; }
+  .navbar .menu-button { width: 62px; gap: 5px; }
+  .navbar .brand { gap: 6px; }
+  .navbar .brand strong { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .menu-button__symbol { transition: none; }
+}

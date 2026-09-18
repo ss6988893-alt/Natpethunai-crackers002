@@ -1,4 +1,21 @@
 .products-page .products-content { scroll-margin-top: 100px; }
+.products-page .category-picker { display: none; }
+@media (max-width: 980px) {
+  .products-page .category-sidebar { padding: 0; border: 1px solid #ead7b0; border-radius: 20px; background: #fffdf7; overflow: hidden; box-shadow: 0 8px 24px #6c390a0a; }
+  .products-page .category-sidebar > .eyebrow { display: none; }
+  .products-page .category-picker { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 80px; padding: 16px; border: 0; background: transparent; color: #301d15; text-align: left; cursor: pointer; }
+  .category-picker__icon { display: grid; place-items: center; flex: 0 0 42px; height: 42px; border-radius: 14px; color: #9c311d; background: #fff0ce; font-size: 21px; }
+  .category-picker__copy { flex: 1; min-width: 0; }
+  .category-picker__copy small { display: block; margin-bottom: 4px; color: #8b6b50; font-size: 10px; letter-spacing: .07em; text-transform: uppercase; }
+  .category-picker__copy strong { display: block; font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+  .category-picker__action { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; }
+  .category-picker__action svg { transition: transform .2s; }
+  .category-sidebar--open .category-picker__action svg { transform: rotate(180deg); }
+  .products-page .category-sidebar .filter-row { display: none; }
+  .products-page .category-sidebar--open .filter-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; width: 100%; max-height: 360px; overflow: auto; padding: 12px; border-top: 1px solid #f0e2c8; overscroll-behavior: contain; }
+  .products-page .category-sidebar .filter-row button { width: 100%; max-width: none; min-height: 58px; padding: 10px; border-radius: 12px; font-size: 12px; line-height: 1.4; white-space: normal; overflow-wrap: anywhere; transform: none; }
+  .products-page .category-sidebar .filter-row button span { flex-shrink: 0; }
+}
 .products-page .catalog-explore { margin-top: clamp(3rem, 7vw, 5rem); }
 .products-page .catalog-explore .load-more { display: flex; width: fit-content; max-width: 100%; }
 .products-page .product-category-heading h2 { overflow-wrap: anywhere; line-height: 1.1; }
