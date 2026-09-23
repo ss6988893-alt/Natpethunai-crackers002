@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import FireworksCanvas from '../components/effects/FireworksCanvas';
 import { categories } from '../data/catalog';
+import '../styles/home-order-banner.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -28,6 +29,10 @@ export default function Home() {
         <div className="hero__aurora" aria-hidden="true" />
         <div className="container-wide hero__grid">
           <div className="hero__copy">
+            <div className="home-order-banner" role="note" aria-label="Minimum order amount is 3,000 rupees">
+              <span className="home-order-banner__icon" aria-hidden="true"><FiPackage /></span>
+              <div><span className="home-order-banner__label">Minimum order</span><strong>₹3,000</strong><p>Choose your favourites and build your celebration.</p></div>
+            </div>
             <motion.p className="eyebrow" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>The festival collection • 2026</motion.p>
             <motion.h1 initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .12, duration: .8 }}><span>Light up</span><br />every moment.</motion.h1>
             <motion.p className="hero__lede" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .35 }}>A cinematic collection of crackers and celebration combos—select your favourites, create an estimate and let our team handle the rest.</motion.p>

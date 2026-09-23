@@ -1,0 +1,22 @@
+.home-order-banner {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 28px;
+  padding: 20px 24px;
+  border: 1px solid #ffdc76;
+  border-radius: 20px;
+  background: linear-gradient(115deg, #ffe8a3, #ffc428);
+  color: #341b0c;
+  box-shadow: 0 12px 36px #f6b91e22;
+}
+.home-order-banner__icon { flex-shrink: 0; display: grid; place-items: center; width: 54px; height: 54px; border: 1px solid #783a1733; border-radius: 16px; background: #fff6da66; font-size: 28px; }
+.home-order-banner__label { display: block; font-size: 13px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+.home-order-banner strong { display: block; margin-top: 4px; font: 800 clamp(2rem, 4vw, 3rem)/1.1 'Manrope', sans-serif; }
+.home-order-banner p { margin: 8px 0 0; font-size: 13px; line-height: 1.5; }
+@media (max-width: 540px) {
+  .home-order-banner { gap: 12px; padding: 16px; margin-bottom: 24px; border-radius: 16px; }
+  .home-order-banner__icon { width: 42px; height: 42px; font-size: 24px; }
+  .home-order-banner__label { font-size: 11px; }
+  .home-order-banner p { font-size: 12px; }
+}
