@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FiArrowUpRight, FiCheck, FiFileText, FiPackage, FiShield } from 'react-icons/fi';
@@ -7,13 +7,35 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import FireworksCanvas from '../components/effects/FireworksCanvas';
 import HomeProductMarquee from '../components/products/HomeProductMarquee';
 import { categories } from '../data/catalog';
+import { getCategories, getProducts } from '../services/api';
 import '../styles/home-order-banner.css';
+import '../styles/home-categories.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 export default function Home() {
   const rootRef = useRef(null);
   const reducedMotion = useReducedMotion();
+  const [homeCategories, setHomeCategories] = useState(categories);
+  useEffect(() => {
+    let active = true;
+    Promise.all([getCategories(), getProducts({ limit: 250 })]).then(([categoryResult, productResult]) => {
+      const images = new Map();
+      const counts = new Map();
+      const isProductImage = (value) => value && !/hero-fireworks|shop-logo|placeholder/i.test(value);
+      productResult.data.forEach((product) => {
+        counts.set(product.categorySlug, (counts.get(product.categorySlug) || 0) + 1);
+        const image = [product.image, ...(product.images || [])].find(isProductImage);
+        if (image && !images.has(product.categorySlug)) images.set(product.categorySlug, image);
+      });
+      if (active) setHomeCategories(categoryResult.data.map((category) => ({
+        ...category,
+        image: (isProductImage(category.image) ? category.image : images.get(category.slug)) || '/assets/shop-banner.webp',
+        description: `${counts.get(category.slug) || 0} products available`,
+      })));
+    });
+    return () => { active = false; };
+  }, []);
   useEffect(() => {
     if (reducedMotion) return undefined;
     const context = gsap.context(() => {
@@ -60,14 +82,15 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="section categories-section">
+      <section className="section categories-section home-categories">
         <div className="container-wide">
-          <div className="section-heading" data-reveal><div><p className="eyebrow">Popular categories</p><h2>Find your kind of celebration.</h2></div><Link to="/products">Explore all <FiArrowUpRight /></Link></div>
+          <div className="section-heading" data-reveal><div><p className="eyebrow">All categories</p><h2>Find your kind of celebration.</h2></div><Link to="/products">Explore all <FiArrowUpRight /></Link></div>
           <div className="category-rail">
-            {categories.slice(0, 8).map((category, index) => (
-              <motion.div key={category.slug} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .25 }} transition={{ delay: index * .035 }}>
+            {homeCategories.map((category, index) => (
+              <motion.div key={category.slug} initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .25 }} transition={{ delay: (index % 4) * .035 }}>
                 <Link className="category-card" to={`/products?category=${category.slug}`}>
-                  <span className="category-card__number">{String(index + 1).padStart(2, '0')}</span><h3>{category.name}</h3><p>{category.description}</p><FiArrowUpRight />
+                  <img className="home-category-image" src={category.image || '/assets/shop-banner.webp'} alt="" loading="lazy" decoding="async" onError={(event) => { event.currentTarget.onerror = null; if (!event.currentTarget.src.endsWith('/assets/shop-banner.webp')) event.currentTarget.src = '/assets/shop-banner.webp'; }} />
+                  <div className="home-category-copy"><span className="category-card__number">{String(index + 1).padStart(2, '0')}</span><h3>{category.name}</h3><p>{category.description}</p></div><FiArrowUpRight />
                 </Link>
               </motion.div>
             ))}
