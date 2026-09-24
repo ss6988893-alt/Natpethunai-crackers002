@@ -7,6 +7,8 @@ const { connectDatabase, disconnectDatabase } = await import('../config/database
 const { default: Category } = await import('../models/Category.js');
 const { default: Product } = await import('../models/Product.js');
 const { ensureCatalog } = await import('../utils/ensureCatalog.js');
+const { deleteProduct } = await import('../controllers/adminController.js');
+const { default: DeletedCatalogProduct } = await import('../models/DeletedCatalogProduct.js');
 
 test('final PDF catalogue sync updates prices while preserving product images', async () => {
   const database = await MongoMemoryServer.create();
@@ -47,6 +49,19 @@ test('final PDF catalogue sync updates prices while preserving product images', 
     const legacy = await Product.findOne({ sourceNumber: '29' });
     assert.equal(legacy.isActive, false);
     assert.equal(legacy.image, '/uploads/red-bijili.webp');
+
+    // Exercise the actual admin deletion handler, then simulate repeated restarts.
+    const removed = await Product.findOne({ sourceNumber: '2' });
+    let deletionResponse;
+    await deleteProduct({ params: { id: removed._id } }, { json: (body) => { deletionResponse = body; } });
+    assert.equal(deletionResponse.success, true);
+    assert.ok(await DeletedCatalogProduct.exists({ sourceNumber: '2' }));
+    assert.equal(await Product.findById(removed._id), null);
+    await ensureCatalog();
+    await ensureCatalog();
+    assert.equal(await Product.findOne({ sourceNumber: '2' }), null);
+    assert.equal(await Product.findOne({ slug: removed.slug }), null);
+    assert.ok(await Product.findOne({ sourceNumber: '3' }));
   } finally {
     await disconnectDatabase();
     await database.stop();

@@ -1,5 +1,6 @@
 import Category from '../models/Category.js';
 import Product from '../models/Product.js';
+import DeletedCatalogProduct from '../models/DeletedCatalogProduct.js';
 import { priceListGroups, retiredSourceNumbers } from '../data/priceList.js';
 
 const slugify = (value) => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
@@ -31,6 +32,7 @@ export async function ensureCatalog({ CategoryModel = Category, ProductModel = P
       const originalPrice = priceAvailable && Number.isFinite(listPrice) ? listPrice : 0;
       const discount = priceAvailable && originalPrice > 0 ? Math.round((1 - basePrice / originalPrice) * 100) : 0;
       const slug = `${slugify(name)}-${sourceNumber.toLowerCase()}`;
+      if (await DeletedCatalogProduct.exists({ $or: [{ sourceNumber }, { slug }] })) return 'deleted';
       const existing = await ProductModel.findOne({ $or: [{ sourceNumber }, { slug }] }).select('_id priceAvailable stockQuantity status');
       const catalogFields = {
         name,

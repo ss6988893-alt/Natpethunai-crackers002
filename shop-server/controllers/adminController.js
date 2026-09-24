@@ -5,6 +5,7 @@ import Notification from '../models/Notification.js';
 import Order from '../models/Order.js';
 import OrderItem from '../models/OrderItem.js';
 import Product from '../models/Product.js';
+import DeletedCatalogProduct from '../models/DeletedCatalogProduct.js';
 import { sendCustomerOrderAcceptedEmail } from '../services/emailService.js';
 import { deleteProductImages, saveProductImages } from '../services/productImageService.js';
 
@@ -71,7 +72,20 @@ export async function updateProduct(request, response) {
   if (images.length) await deleteProductImages(previousImages);
   response.json({ success: true, data: product });
 }
-export async function deleteProduct(request, response) { const product = await Product.findByIdAndDelete(request.params.id); if (!product) return response.status(404).json({ success: false, message: 'Product not found.' }); await deleteProductImages(product.images?.length ? product.images : [product.image].filter(Boolean)); response.json({ success: true }); }
+export async function deleteProduct(request, response) {
+  const product = await Product.findById(request.params.id);
+  if (!product) return response.status(404).json({ success: false, message: 'Product not found.' });
+  // Persist the deletion intent before removing the product. If this write fails,
+  // leave the product intact so a later import cannot silently resurrect it.
+  await DeletedCatalogProduct.updateOne(
+    { slug: product.slug },
+    { $set: { sourceNumber: product.sourceNumber } },
+    { upsert: true, runValidators: true },
+  );
+  await Product.deleteOne({ _id: product._id });
+  await deleteProductImages(product.images?.length ? product.images : [product.image].filter(Boolean));
+  response.json({ success: true });
+}
 
 export async function adminCategories(request, response) { response.json({ success: true, data: await Category.find().sort({ displayOrder: 1, name: 1 }).lean() }); }
 export async function createCategory(request, response) { const name = String(request.body.name || '').trim(); if (name.length < 2) return response.status(400).json({ success: false, message: 'Category name is required.' }); const item = await Category.create({ name, slug: slugify(name, { lower: true, strict: true }), description: request.body.description || '', image: request.body.image || '', displayOrder: Number(request.body.displayOrder || 0), isActive: boolean(request.body.isActive, true) }); response.status(201).json({ success: true, data: item }); }
