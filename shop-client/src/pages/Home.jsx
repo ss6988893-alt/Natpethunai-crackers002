@@ -5,6 +5,7 @@ import { FiArrowUpRight, FiCheck, FiFileText, FiPackage, FiShield } from 'react-
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import FireworksCanvas from '../components/effects/FireworksCanvas';
+import HomeProductMarquee from '../components/products/HomeProductMarquee';
 import { categories } from '../data/catalog';
 import '../styles/home-order-banner.css';
 
@@ -37,7 +38,6 @@ export default function Home() {
             <motion.h1 initial={{ opacity: 0, y: 34 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .12, duration: .8 }}><span>Light up</span><br />every moment.</motion.h1>
             <motion.p className="hero__lede" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .35 }}>A cinematic collection of crackers and celebration combos—select your favourites, create an estimate and let our team handle the rest.</motion.p>
             <motion.div className="hero__actions" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: .5 }}>
-              <Link className="button button--gold" to="/products">Explore crackers <FiArrowUpRight /></Link>
               <Link className="button button--glass" to="/combos">View combos</Link>
             </motion.div>
             <motion.div className="hero__trust" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: .65 }}>
@@ -50,6 +50,8 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      <HomeProductMarquee />
 
       <section className="section about" data-reveal>
         <div className="container-wide about__grid">
