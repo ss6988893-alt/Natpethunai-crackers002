@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { FiSearch, FiGrid, FiChevronDown } from 'react-icons/fi';
-import { useSearchParams } from 'react-router-dom';
+import { FiSearch, FiGrid, FiChevronDown, FiArrowUpRight, FiGift } from 'react-icons/fi';
+import { Link, useSearchParams } from 'react-router-dom';
 import PageIntro from '../components/layout/PageIntro';
 import ProductQuickView from '../components/products/ProductQuickView';
 import ProductCard from '../components/ui/ProductCard';
@@ -75,6 +75,13 @@ export default function Products() {
   return <main id="main-content" className="products-page">
     <PageIntro eyebrow="Our complete collection" title="Find your favourites." copy="Explore every category, compare prices and add your favourite crackers to the cart." />
     <div className="product-scene">
+      <div className="container-wide">
+        <Link className="combo-availability" to="/combos" aria-label="Explore celebration combo boxes">
+          <span className="combo-availability__icon" aria-hidden="true"><FiGift /></span>
+          <span className="combo-availability__copy"><small>Celebration special</small><strong>Combo boxes are available</strong><em>Curated cracker collections for every budget.</em></span>
+          <span className="combo-availability__action">View combos <FiArrowUpRight /></span>
+        </Link>
+      </div>
       <section className="products-layout container-wide">
         <aside className={`category-sidebar ${categoriesOpen ? 'category-sidebar--open' : ''}`} aria-label="Product categories">
           <button className="category-picker" aria-expanded={categoriesOpen} aria-controls="category-options" onClick={() => setCategoriesOpen((value) => !value)}>
