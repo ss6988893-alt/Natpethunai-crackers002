@@ -5,7 +5,7 @@ import { Link, NavLink } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import '../../styles/mobile-navigation.css';
 
-const links = [['/', 'Home'], ['/products', 'Products'], ['/combos', 'Combos'], ['/contact', 'Contact']];
+const links = [['/products', 'Products'], ['/combos', 'Combos'], ['/contact', 'Contact']];
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -27,7 +27,7 @@ export default function Navbar() {
   return (
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <div className="navbar__inner container-wide">
-        <Link to="/" className="brand" aria-label="Natpe Thunai Crackers home">
+        <Link to="/products" className="brand" aria-label="Natpe Thunai Crackers products">
           <span className="brand__mark brand__mark--image" aria-hidden="true"><img src="/assets/shop-logo.webp" alt="" /></span>
           <span><strong>Natpe Thunai</strong><small>Crackers</small></span>
         </Link>

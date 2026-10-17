@@ -5,7 +5,6 @@ import Footer from './components/layout/Footer';
 import FloatingActions from './components/layout/FloatingActions';
 import AdminProtectedRoute from './components/admin/AdminProtectedRoute';
 
-const Home = lazy(() => import('./pages/Home'));
 const Products = lazy(() => import('./pages/Products'));
 const Combos = lazy(() => import('./pages/Combos'));
 const Cart = lazy(() => import('./pages/Cart'));
@@ -39,14 +38,14 @@ export default function App() {
       {!isAdmin && <Navbar />}
       <Suspense fallback={<PageLoader />}>
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/products" element={<Products />} />
           <Route path="/combos" element={<Combos />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/order-success/:orderId" element={<OrderSuccess />} />
-          <Route path="/success" element={<Navigate to="/" replace />} />
+          <Route path="/success" element={<Navigate to="/products" replace />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminProtectedRoute><AdminLayout /></AdminProtectedRoute>}>
             <Route index element={<AdminDashboard />} />
