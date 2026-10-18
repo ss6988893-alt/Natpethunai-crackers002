@@ -46,6 +46,7 @@ export const adminApi = {
   dashboard: (params) => http.get('/admin/dashboard', { params }).then((response) => response.data),
   analytics: (params) => http.get('/admin/analytics', { params }).then((response) => response.data),
   products: (params) => http.get('/admin/products', { params }).then((response) => response.data),
+  product: (id) => http.get(`/admin/products/${id}`).then((response) => response.data),
   createProduct: (data) => http.post('/admin/products', data, { timeout: 90000 }).then((response) => response.data),
   updateProduct: (id, data) => http.put(`/admin/products/${id}`, data, { timeout: 90000 }).then((response) => response.data),
   deleteProduct: (id) => http.delete(`/admin/products/${id}`).then((response) => response.data),

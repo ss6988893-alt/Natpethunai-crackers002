@@ -52,6 +52,12 @@ export async function adminProducts(request, response) {
   response.json({ success: true, data, pagination: { page, limit, total, pages: Math.ceil(total / limit) } });
 }
 
+export async function adminProduct(request, response) {
+  const product = await Product.findById(request.params.id).populate('category', 'name slug').lean();
+  if (!product) return response.status(404).json({ success: false, message: 'Product not found.' });
+  return response.json({ success: true, data: product });
+}
+
 const boolean = (value, fallback = false) => value === undefined ? fallback : value === true || value === 'true';
 const productPayload = (body) => ({ name: body.name, sku: body.sku || undefined, category: body.category, description: body.description || '', originalPrice: Number(body.originalPrice || 0), price: Number(body.price), discount: Number(body.discount || 0), stockQuantity: Number(body.stockQuantity || 0), status: body.status || (Number(body.stockQuantity) > 0 ? 'in-stock' : 'out-of-stock'), featured: boolean(body.featured), isActive: boolean(body.isActive, true), priceAvailable: true });
 export async function createProduct(request, response) {
